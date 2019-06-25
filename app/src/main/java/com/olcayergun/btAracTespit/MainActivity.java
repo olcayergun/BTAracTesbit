@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bKayitlar = findViewById(R.id.bKayitlar);
-        bKayitlar.setEnabled(false);
+        bKayitlar.setEnabled(true);
         bKayitlar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(TAG, "Shoeing recods!!!1");

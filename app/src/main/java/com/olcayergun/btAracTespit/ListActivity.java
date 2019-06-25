@@ -21,12 +21,12 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_list);
 
-        lv = (ListView) findViewById(R.id.lv);
-        btnselect = (Button) findViewById(R.id.select);
-        btndeselect = (Button) findViewById(R.id.deselect);
-        btnnext = (Button) findViewById(R.id.next);
+        lv = findViewById(R.id.lv);
+        btnselect = findViewById(R.id.select);
+        btndeselect = findViewById(R.id.deselect);
+        btnnext = findViewById(R.id.next);
 
         modelArrayList = getModel(false);
         customAdapter = new CustomAdapter(this,modelArrayList);
@@ -55,8 +55,6 @@ public class ListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 
     private ArrayList<Model> getModel(boolean isSelect){
