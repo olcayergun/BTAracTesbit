@@ -17,8 +17,7 @@ public class ListActivity extends AppCompatActivity {
     private ListView lv;
     private ArrayList<Model> modelArrayList;
     private CustomAdapter customAdapter;
-    private Button btnselect, btndeselect, btnnext;
-    private  String[] animallist = new String[]{"Lion", "Tiger", "Leopard", "Cat"};
+    private String[] animallist = new String[]{"Lion", "Tiger", "Leopard", "Cat"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +25,19 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         lv = findViewById(R.id.lv);
-        btnselect = findViewById(R.id.select);
-        btndeselect = findViewById(R.id.deselect);
-        btnnext = findViewById(R.id.next);
+        Button btnselect = findViewById(R.id.select);
+        Button btndeselect = findViewById(R.id.deselect);
+        Button btnnext = findViewById(R.id.next);
 
         modelArrayList = getModel(false);
-        customAdapter = new CustomAdapter(this,modelArrayList);
+        customAdapter = new CustomAdapter(this, modelArrayList);
         lv.setAdapter(customAdapter);
 
         btnselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 modelArrayList = getModel(true);
-                customAdapter = new CustomAdapter(ListActivity.this,modelArrayList);
+                customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
                 lv.setAdapter(customAdapter);
             }
         });
@@ -46,23 +45,22 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 modelArrayList = getModel(false);
-                customAdapter = new CustomAdapter(ListActivity.this,modelArrayList);
+                customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
                 lv.setAdapter(customAdapter);
             }
         });
         btnnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ListActivity.this,NextActivity.class);
+                Intent intent = new Intent(ListActivity.this, NextActivity.class);
                 startActivity(intent);
             }
         });
     }
 
-    private ArrayList<Model> getModel(boolean isSelect){
+    private ArrayList<Model> getModel(boolean isSelect) {
         ArrayList<Model> list = new ArrayList<>();
-        for(int i = 0; i < 4; i++){
-
+        for (int i = 0; i < 4; i++) {
             Model model = new Model();
             model.setSelected(isSelect);
             model.setAnimal(animallist[i]);
@@ -71,4 +69,14 @@ public class ListActivity extends AppCompatActivity {
         return list;
     }
 
+    private ArrayList<Model> getKayitlar(boolean isSelect) {
+        ArrayList<Model> list = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Model model = new Model();
+            model.setSelected(isSelect);
+            model.setAnimal(animallist[i]);
+            list.add(model);
+        }
+        return list;
+    }
 }

@@ -61,7 +61,6 @@ class SendDeviceDetails extends AsyncTask<String, Void, String> {
             } else {
                 data = Integer.toString(statusCode);
             }
-
         } catch (Exception e) {
             Log.d(TAG, "", e);
         } finally {

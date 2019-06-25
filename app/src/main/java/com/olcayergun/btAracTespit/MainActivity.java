@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                     State = 0;
                     Toast.makeText(MainActivity.this, sSendData[0].concat(sSendData[1]).concat(sSendData[2]), Toast.LENGTH_LONG).show();
 
-                    bilgileriKayıtet();
+                    bilgileriKayıtEt();
 
                     bGeri.setEnabled(false);
                     if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //
-    private void bilgileriKayıtet() {
+    private void bilgileriKayıtEt() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

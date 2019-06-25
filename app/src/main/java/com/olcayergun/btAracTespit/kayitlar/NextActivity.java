@@ -9,14 +9,12 @@ import com.olcayergun.btAracTespit.R;
 
 public class NextActivity extends AppCompatActivity {
 
-    private TextView tv;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
 
-        tv = (TextView) findViewById(R.id.tv);
+        TextView tv = findViewById(R.id.tv);
 
         for (int i = 0; i < CustomAdapter.modelArrayList.size(); i++){
             if(CustomAdapter.modelArrayList.get(i).getSelected()) {
