@@ -1,4 +1,4 @@
-package com.olcayergun.btAracTespit;
+package com.olcayergun.btAracTespit.kayitlar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.olcayergun.btAracTespit.R;
 
 import java.util.ArrayList;
 

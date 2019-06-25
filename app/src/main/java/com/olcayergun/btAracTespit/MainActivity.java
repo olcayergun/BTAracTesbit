@@ -26,9 +26,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.olcayergun.btAracTespit.JSONObjects.Depo;
-import com.olcayergun.btAracTespit.JSONObjects.Plaka;
-import com.olcayergun.btAracTespit.JSONObjects.Urun;
+import com.olcayergun.btAracTespit.jsonObjects.Depo;
+import com.olcayergun.btAracTespit.jsonObjects.Plaka;
+import com.olcayergun.btAracTespit.jsonObjects.Urun;
+import com.olcayergun.btAracTespit.kayitlar.ListActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -1,9 +1,11 @@
-package com.olcayergun.btAracTespit;
+package com.olcayergun.btAracTespit.kayitlar;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.olcayergun.btAracTespit.R;
 
 public class NextActivity extends AppCompatActivity {
 

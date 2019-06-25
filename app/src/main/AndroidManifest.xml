@@ -23,8 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.olcayergun.btAracTespit.ListActivity" />
-        <activity android:name="com.olcayergun.btAracTespit.NextActivity" />
+        <activity android:name="com.olcayergun.btAracTespit.kayitlar.ListActivity" />
+        <activity android:name="com.olcayergun.btAracTespit.kayitlar.NextActivity" />
     </application>
 
 

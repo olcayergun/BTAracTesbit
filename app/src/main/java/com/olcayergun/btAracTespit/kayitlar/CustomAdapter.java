@@ -1,4 +1,4 @@
-package com.olcayergun.btAracTespit;
+package com.olcayergun.btAracTespit.kayitlar;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.olcayergun.btAracTespit.R;
 
 import java.util.ArrayList;
 

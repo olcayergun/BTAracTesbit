@@ -1,4 +1,4 @@
-package com.olcayergun.btAracTespit;
+package com.olcayergun.btAracTespit.kayitlar;
 
 public class Model {
 
