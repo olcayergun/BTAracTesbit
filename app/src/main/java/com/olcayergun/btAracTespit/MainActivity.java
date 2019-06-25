@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList mDeviceList;
     private Button bGeri;
+    private Button bKayitlar;
     private TextView textView1;
     private TextView tvBTDurumu;
 
@@ -193,6 +194,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        bKayitlar = findViewById(R.id.bKayitlar);
+        bKayitlar.setEnabled(false);
+        bKayitlar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d(TAG, "Shoeing recods!!!1");
+                Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
+                startActivity(myIntent);
+            }
+        });
+
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
@@ -288,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                             GetJSON.localdosyaurunyaz(SENDFILEURL[1], fileData);
 
                             if (isNetworkAvailable()) {
-                               new SendDeviceDetails(MainActivity.this).execute("http://www.olcayergun.com/4.php", fileData);
+                                new SendDeviceDetails(MainActivity.this).execute("http://www.olcayergun.com/4.php", fileData);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
