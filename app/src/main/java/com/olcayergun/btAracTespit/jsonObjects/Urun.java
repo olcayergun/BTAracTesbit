@@ -6,21 +6,13 @@ import org.json.JSONObject;
 
 public class Urun {
     private static String TAG = "Adaer";
-    String id;
-    String One;
-    String Zero;
-    String urunkodu;
-    String uruntaninimi;
-    String Two;
+    String STOK_KODU;
+    String STOK_ADI;
 
     public Urun(JSONObject obj) {
         try {
-            this.id = obj.getString("id");
-            One = obj.getString("1");
-            Zero = obj.getString("0");
-            this.urunkodu = obj.getString("urunkodu");
-            this.uruntaninimi = obj.getString("uruntanimi");
-            Two = obj.getString("2");
+            STOK_KODU = obj.getString("STOK_KODU");
+            STOK_ADI = obj.getString("STOK_ADI");
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }

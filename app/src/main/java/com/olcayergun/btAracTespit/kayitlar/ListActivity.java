@@ -2,6 +2,7 @@ package com.olcayergun.btAracTespit.kayitlar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -9,13 +10,20 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.olcayergun.btAracTespit.R;
+import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ListActivity extends AppCompatActivity {
-
+    private static String TAG = "Adaer";
+    private static String[] SENDFILEURL = {"", "bilgi.txt"};
     private ListView lv;
     private ArrayList<Model> modelArrayList;
+    private ArrayList<Kayit> kayitArrayList;
     private CustomAdapter customAdapter;
     private String[] animallist = new String[]{"Lion", "Tiger", "Leopard", "Cat"};
 
@@ -31,6 +39,7 @@ public class ListActivity extends AppCompatActivity {
 
         modelArrayList = getModel(false);
         customAdapter = new CustomAdapter(this, modelArrayList);
+        kayitArrayList = getKayitlar(false);
         lv.setAdapter(customAdapter);
 
         btnselect.setOnClickListener(new View.OnClickListener() {
@@ -69,14 +78,25 @@ public class ListActivity extends AppCompatActivity {
         return list;
     }
 
-    private ArrayList<Model> getKayitlar(boolean isSelect) {
-        ArrayList<Model> list = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            Model model = new Model();
-            model.setSelected(isSelect);
-            model.setAnimal(animallist[i]);
-            list.add(model);
+    private ArrayList getKayitlar(boolean isSelect) {
+        ArrayList list = new ArrayList();
+        StringBuilder retBuf = new StringBuilder();
+        try {
+            FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
+            if (fileInputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                String lineData = bufferedReader.readLine();
+                while (lineData != null) {
+                    retBuf.append(lineData);
+                    lineData = bufferedReader.readLine();
+                }
+            }
+        } catch (IOException ex) {
+            Log.e(TAG, ex.getMessage(), ex);
         }
         return list;
+
     }
 }

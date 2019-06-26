@@ -39,8 +39,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap hmPlaka = new HashMap();
     private String[] sSendData = new String[3];
 
-    private static String[][] URLSFILES = {{"http://www.olcayergun.com/1.html", "http://www.olcayergun.com/2.html", "http://www.olcayergun.com/3.html"},
+    private static String[][] URLSFILES = {{"http://www.olcayergun.com/urun.html", "http://www.olcayergun.com/depo.html", "http://www.olcayergun.com/plaka.html"},
             {"urunler.txt", "depolar.txt", "plakalar.txt"}};
 
     private static String[] SENDFILEURL = {"", "bilgi.txt"};
@@ -82,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList mDeviceList;
     private Button bGeri;
     private Button bKayitlar;
+    private Button bGuncelle;
     private TextView textView1;
     private TextView tvBTDurumu;
 
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (null != device) {
                     Plaka plaka = (Plaka) hmPlaka.get(device.getAddress());
-                    String sPlaka = plaka != null ? plaka.getPlaka() : null;
+                    String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
                         sPlaka = "Bulunamadı.";
                     } else {
@@ -199,9 +204,25 @@ public class MainActivity extends AppCompatActivity {
         bKayitlar.setEnabled(true);
         bKayitlar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Shoeing recods!!!1");
+                Log.d(TAG, "Showing recods!!!1");
                 Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
                 startActivity(myIntent);
+            }
+        });
+
+        bGuncelle = findViewById(R.id.bGüncelle);
+                bGuncelle.setEnabled(true);
+        bGuncelle.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d(TAG, "Update info!!!1");
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
+                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                    Log.i(TAG, "Wifi Etkin");
+                    webServistenBilgileriAl();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG);
+                }
             }
         });
 
@@ -288,6 +309,9 @@ public class MainActivity extends AppCompatActivity {
                             postData.put("plaka", sSendData[0]);
                             postData.put("urun", sSendData[1]);
                             postData.put("depo", sSendData[2]);
+                            postData.put("isSelected", false);
+                            postData.put("isSend", false);
+                            postData.put("zaman", getCurrentTimestamp ());
                             String fileData = "";
                             try {
                                 FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
@@ -335,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Urun u = new Urun(jo);
-                            hmUrun.put(jo.get("uruntanimi"), u);
+                            hmUrun.put(jo.get("STOK_ADI"), u);
                         }
                         break;
                     case "depolar.txt":
@@ -343,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Depo d = new Depo(jo);
-                            hmDepo.put(jo.get("depotanimi"), d);
+                            hmDepo.put(jo.get("DEPO_ISMI"), d);
                         }
                         break;
                     case "plakalar.txt":
@@ -351,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
-                            hmPlaka.put(jo.get("bluetooth"), p);
+                            hmPlaka.put(jo.get("PLAKA"), p);
                         }
                         break;
                 }
@@ -433,5 +457,11 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+    private String getCurrentTimestamp () {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        String strDate = dateFormat.format(date);
+        return  strDate;
     }
 }
