@@ -60,84 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static String[][] URLSFILES = {{"http://www.olcayergun.com/urun.html", "http://www.olcayergun.com/depo.html", "http://www.olcayergun.com/plaka.html"},
             {"urunler.txt", "depolar.txt", "plakalar.txt"}};
-
     private static String[] SENDFILEURL = {"", "bilgi.txt"};
 
-    //NT
-    private final BroadcastReceiver NetworkChangeReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null || intent.getExtras() == null) {
-                return;
-            }
-
-            String action = intent.getAction();
-            Log.i(TAG, "An network intent action : ".concat(action != null ? action : ""));
-/*
-            ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
-            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                Log.i(TAG, "Wifi Etkin");
-                webServistenBilgileriAl();
-            }
-*/
-        }
-    };
     private ListView listView;
-    private ArrayList mDeviceList;
+    private ArrayList mDeviceList = new ArrayList();
     private Button bGeri;
-    private Button bKayitlar;
-    private Button bGuncelle;
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
-
-    //BT
-    private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.i(TAG, "An intent action : ".concat(action != null ? action : ""));
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                Log.i(TAG, "Discovery is started.");
-                tvBTDurumu.setText("Cihaz aranıyor...");
-                mDeviceList.clear();
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.i(TAG, "Discovery is stoped.");
-                tvBTDurumu.setText("Cihaz araması durdu...");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
-                    if (State == 0) {
-                        mBluetoothAdapter.startDiscovery();
-                    }
-                }
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                //bluetooth device found
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (null != device) {
-                    Plaka plaka = (Plaka) hmPlaka.get(device.getAddress());
-                    String sPlaka = plaka != null ? plaka.getPLAKA() : null;
-                    if (null == sPlaka) {
-                        sPlaka = "Bulunamadı.";
-                    } else {
-                        if (-1 != mDeviceList.indexOf("Bulunamadı.")) {
-                            mDeviceList.clear();
-                        }
-                    }
-                    String s = sPlaka.concat("  ").concat("[").concat(device.getName().concat("-").concat(device.getAddress())).concat("]");
-                    Log.i(TAG, "A device is discovered : ".concat(s));
-                    if (-1 == mDeviceList.indexOf(sPlaka)) {
-                        mDeviceList.add(sPlaka);
-                        listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
-                    }
-                }
-            }
-        }
-    };
-
-    public MainActivity() {
-        mDeviceList = new ArrayList();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /////
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -181,10 +111,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /////
         tvNTDurum = findViewById(R.id.tv1);
         tvNTDurum.setText("");
         tvBTDurumu = findViewById(R.id.tv2);
         tvBTDurumu.setText("");
+
+        //////
         bGeri = findViewById(R.id.bGeri);
         bGeri.setEnabled(false);
         bGeri.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        bKayitlar = findViewById(R.id.bKayitlar);
+        /////
+        Button bKayitlar = findViewById(R.id.bKayitlar);
         bKayitlar.setEnabled(true);
         bKayitlar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -210,8 +144,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        bGuncelle = findViewById(R.id.bGüncelle);
-                bGuncelle.setEnabled(true);
+        ////
+        Button bGuncelle = findViewById(R.id.bGüncelle);
+        bGuncelle.setEnabled(true);
         bGuncelle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(TAG, "Update info!!!1");
@@ -227,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /////
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
@@ -260,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     //////////////////////////////////////////////////
     //yardımcı metotlar.
-
+    //////////////////////////////////////////////////
     //
     private void state1Process() {
         Log.d(TAG, "1");
@@ -312,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                             postData.put("depo", sSendData[2]);
                             postData.put("isSelected", false);
                             postData.put("isSend", false);
-                            postData.put("zaman", getCurrentTimestamp ());
+                            postData.put("zaman", getCurrentTimestamp());
                             String fileData = "";
                             try {
                                 FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
@@ -338,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         String newString = Arrays.toString(sSendData);
         builder.setMessage(newString.concat(" - ").concat("Doğru mu?")).setPositiveButton("Evet", dialogClickListener)
@@ -459,10 +396,78 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-    private String getCurrentTimestamp () {
+
+    private String getCurrentTimestamp() {
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String strDate = dateFormat.format(date);
-        return  strDate;
+        return strDate;
     }
+
+    //Boardcaat Reciever
+    //NT
+    private final BroadcastReceiver NetworkChangeReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || intent.getExtras() == null) {
+                return;
+            }
+
+            String action = intent.getAction();
+            Log.i(TAG, "An network intent action : ".concat(action != null ? action : ""));
+/*
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
+            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                Log.i(TAG, "Wifi Etkin");
+                webServistenBilgileriAl();
+            }
+*/
+        }
+    };
+
+    //BT
+    private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.i(TAG, "An intent action : ".concat(action != null ? action : ""));
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                Log.i(TAG, "Discovery is started.");
+                tvBTDurumu.setText("Cihaz aranıyor...");
+                mDeviceList.clear();
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Log.i(TAG, "Discovery is stoped.");
+                tvBTDurumu.setText("Cihaz araması durdu...");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
+                    if (State == 0) {
+                        mBluetoothAdapter.startDiscovery();
+                    }
+                }
+            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                //bluetooth device found
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (null != device) {
+                    Plaka plaka = (Plaka) hmPlaka.get(device.getAddress());
+                    String sPlaka = plaka != null ? plaka.getPLAKA() : null;
+                    if (null == sPlaka) {
+                        sPlaka = "Bulunamadı.";
+                    } else {
+                        if (-1 != mDeviceList.indexOf("Bulunamadı.")) {
+                            mDeviceList.clear();
+                        }
+                    }
+                    String s = sPlaka.concat("  ").concat("[").concat(device.getName().concat("-").concat(device.getAddress())).concat("]");
+                    Log.i(TAG, "A device is discovered : ".concat(s));
+                    if (-1 == mDeviceList.indexOf(sPlaka)) {
+                        mDeviceList.add(sPlaka);
+                        listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
+                    }
+                }
+            }
+        }
+    };
+
 }
