@@ -72,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
 
             String action = intent.getAction();
             Log.i(TAG, "An network intent action : ".concat(action != null ? action : ""));
-
+/*
             ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
             if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
                 Log.i(TAG, "Wifi Etkin");
                 webServistenBilgileriAl();
             }
-
+*/
         }
     };
     private ListView listView;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private Button bGeri;
     private Button bKayitlar;
     private Button bGuncelle;
-    private TextView textView1;
+    private TextView tvNTDurum;
     private TextView tvBTDurumu;
 
     //BT
@@ -181,10 +181,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        textView1 = findViewById(R.id.tv1);
-        textView1.setText("11111111111111111111111111111");
+        tvNTDurum = findViewById(R.id.tv1);
+        tvNTDurum.setText("");
         tvBTDurumu = findViewById(R.id.tv2);
-        tvBTDurumu.setText("2222222222222222222222222222222");
+        tvBTDurumu.setText("");
         bGeri = findViewById(R.id.bGeri);
         bGeri.setEnabled(false);
         bGeri.setOnClickListener(new View.OnClickListener() {
@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
                 if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
                     Log.i(TAG, "Wifi Etkin");
+                    tvNTDurum.setText("Bilgiler alınıyor.");
                     webServistenBilgileriAl();
                 } else {
                     Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG);
@@ -375,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
-                            hmPlaka.put(jo.get("PLAKA"), p);
+                            hmPlaka.put(jo.get("BLUETOOTH"), p);
                         }
                         break;
                 }
@@ -387,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void webServistenBilgileriAl() {
         Log.d(TAG, "onExampleAsyncTaskStarted ");
-        textView1.setText("Ağ bağlanıldı.");
+        tvNTDurum.setText("Ağ bağlanıldı.");
         GetJSON asyncTask = new GetJSON(this);
         asyncTask.setListener(new GetJSON.ExampleAsyncTaskListener() {
             @Override
@@ -396,10 +397,10 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!s.equals("OK")) {
                     Log.e(TAG, "Bilgiler alınamadı.");
-                    textView1.setText("Bilgiler alınamadı.");
+                    tvNTDurum.setText("Bilgiler alınamadı.");
                 } else {
                     dosyadanBilgileriAl();
-                    textView1.setText("Bilgiler alındı.");
+                    tvNTDurum.setText("Bilgiler alındı.");
                 }
             }
         });
