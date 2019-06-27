@@ -35,8 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
@@ -53,17 +54,17 @@ public class MainActivity extends AppCompatActivity {
 
     private int State = 0; //0:Plaka Seçimi, 1:Ürün Seçimi, 2:Hedef Seçimi
 
-    private HashMap hmUrun = new HashMap();
-    private HashMap hmDepo = new HashMap();
-    private HashMap hmPlaka = new HashMap();
+    private HashMap<String, Urun> hmUrun = new HashMap<>();
+    private HashMap<String, Depo> hmDepo = new HashMap<>();
+    private HashMap<String, Plaka> hmPlaka = new HashMap<>();
     private String[] sSendData = new String[3];
 
     private static String[][] URLSFILES = {{"http://www.olcayergun.com/urun.html", "http://www.olcayergun.com/depo.html", "http://www.olcayergun.com/plaka.html"},
             {"urunler.txt", "depolar.txt", "plakalar.txt"}};
-    private static String[] SENDFILEURL = {"", "bilgi.txt"};
+    public static String[] SENDFILEURL = {"", "bilgi.txt"};
 
     private ListView listView;
-    private ArrayList mDeviceList = new ArrayList();
+    private ArrayList<String> mDeviceList = new ArrayList<>();
     private Button bGeri;
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
@@ -91,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (State == 1) {
                     sSendData[State] = item;
                     State = 2;
-
-                    ArrayList<String> keys = new ArrayList<String>(hmDepo.keySet());
+                    ArrayList<String> keys = new ArrayList<>(hmDepo.keySet());
                     ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
                     listView.setAdapter(arrayAdapter);
                     arrayAdapter.notifyDataSetChanged();
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     State = 0;
                     Toast.makeText(MainActivity.this, sSendData[0].concat(sSendData[1]).concat(sSendData[2]), Toast.LENGTH_LONG).show();
 
-                    bilgileriKayıtEt();
+                    bilgileriKayitEt();
 
                     bGeri.setEnabled(false);
                     if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
@@ -154,10 +154,10 @@ public class MainActivity extends AppCompatActivity {
                 NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
                 if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
                     Log.i(TAG, "Wifi Etkin");
-                    tvNTDurum.setText("Bilgiler alınıyor.");
+                    tvNTDurum.setText(R.string.BILGILER_ALINIYOR);
                     webServistenBilgileriAl();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -199,14 +199,11 @@ public class MainActivity extends AppCompatActivity {
     //////////////////////////////////////////////////
     //
     private void state1Process() {
-        Log.d(TAG, "1");
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
         }
-        Log.d(TAG, "2");
         while (mBluetoothAdapter.isDiscovering()) {
         }
-        Log.d(TAG, "3");
 
         ArrayList<String> keys = new ArrayList<String>(hmUrun.keySet());
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
@@ -223,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!mBluetoothAdapter.isDiscovering()) {
                     mBluetoothAdapter.startDiscovery();
                 }
-                tvBTDurumu.setText("Cihaz aranıyor...");
+                tvBTDurumu.setText(R.string.CIHAZ_ARANIYOR);
                 State = 0;
             } else {
                 tvBTDurumu.setText("Bluetooth açınız.");
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //
-    private void bilgileriKayıtEt() {
+    private void bilgileriKayitEt() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -250,19 +247,12 @@ public class MainActivity extends AppCompatActivity {
                             postData.put("isSend", false);
                             postData.put("zaman", getCurrentTimestamp());
                             String fileData = "";
-                            try {
-                                FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
-                                fileData = readFromFileInputStream(fileInputStream);
-                            } catch (FileNotFoundException e) {
-                                Log.e(TAG, "", e);
-                            }
-                            fileData = fileData.concat(postData.toString());
-                            GetJSON.localdosyasil(SENDFILEURL[1]);
-                            GetJSON.localdosyaurunyaz(SENDFILEURL[1], fileData);
-
-                            if (isNetworkAvailable()) {
-                                new SendDeviceDetails(MainActivity.this).execute("http://www.olcayergun.com/4.php", fileData);
-                            }
+                            FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
+                            fileData = readFromFileInputStream(fileInputStream);
+                            JSONArray jsonArray = new JSONArray(fileData);
+                            jsonArray.put(postData);
+                            localdosyasil(SENDFILEURL[1]);
+                            localdosyaurunyaz(SENDFILEURL[1], jsonArray.toString());
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
                         }
@@ -297,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Urun u = new Urun(jo);
-                            hmUrun.put(jo.get("STOK_ADI"), u);
+                            hmUrun.put((String)jo.get("STOK_ADI"), u);
                         }
                         break;
                     case "depolar.txt":
@@ -305,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Depo d = new Depo(jo);
-                            hmDepo.put(jo.get("DEPO_ISMI"), d);
+                            hmDepo.put((String)jo.get("DEPO_ISMI"), d);
                         }
                         break;
                     case "plakalar.txt":
@@ -313,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
-                            hmPlaka.put(jo.get("BLUETOOTH"), p);
+                            hmPlaka.put((String)jo.get("BLUETOOTH"), p);
                         }
                         break;
                 }
@@ -384,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
                     retBuf.append(lineData);
                     lineData = bufferedReader.readLine();
                 }
+                fileInputStream.close();
             }
         } catch (IOException ex) {
             Log.e(TAG, ex.getMessage(), ex);
@@ -400,9 +391,33 @@ public class MainActivity extends AppCompatActivity {
     private String getCurrentTimestamp() {
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        String strDate = dateFormat.format(date);
-        return strDate;
+        return dateFormat.format(date);
     }
+
+    private void localdosyasil(String filename) {
+        try {
+            File dir = getApplicationContext().getFilesDir();
+            File file = new File(dir, filename);
+            boolean deleted = file.delete();
+            Log.i(TAG, filename.concat(" dosya silme SONUCU: ".concat(Boolean.toString(deleted))));
+
+        } catch (Exception e) {
+            Log.i(TAG, filename.concat("dosya silme hatası"), e);
+        }
+    }
+
+    void localdosyaurunyaz(String filename, String textToWrite) {
+        try {
+            localdosyasil(filename);
+            FileOutputStream outputStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(textToWrite.getBytes());
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            Log.i(TAG, filename.concat("dosya yazma hatası"), e);
+        }
+    }
+
 
     //Boardcaat Reciever
     //NT
@@ -440,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
+                    Log.e(TAG, "", e);
                 }
                 if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
                     if (State == 0) {

@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.olcayergun.btAracTespit.MainActivity;
 import com.olcayergun.btAracTespit.R;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class ListActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
-    private static String[] SENDFILEURL = {"", "bilgi.txt"};
+
     private ListView lv;
     private ArrayList<Model> modelArrayList;
     private ArrayList<Kayit> kayitArrayList;
@@ -82,7 +83,7 @@ public class ListActivity extends AppCompatActivity {
         ArrayList list = new ArrayList();
         StringBuilder retBuf = new StringBuilder();
         try {
-            FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
+            FileInputStream fileInputStream = getApplication().openFileInput(MainActivity.SENDFILEURL[1]);
             if (fileInputStream != null) {
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

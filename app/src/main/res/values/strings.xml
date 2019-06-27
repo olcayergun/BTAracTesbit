@@ -3,4 +3,6 @@
     <string name="geri">Geri</string>
     <string name="tv1">textview1111111111111</string>
     <string name="tv2">textview22222222222222222</string>
+    <string name="BILGILER_ALINIYOR">Bilgiler alınıyor.</string>
+    <string name="CIHAZ_ARANIYOR">Cihaz aranıyor...</string>
 </resources>
