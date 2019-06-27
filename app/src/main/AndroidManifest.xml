@@ -24,7 +24,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.olcayergun.btAracTespit.kayitlar.ListActivity" />
-        <activity android:name="com.olcayergun.btAracTespit.kayitlar.NextActivity" />
     </application>
 
 

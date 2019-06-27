@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,21 +16,20 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-class SendDeviceDetails extends AsyncTask<String, Void, String> {
+public class SendDeviceDetails extends AsyncTask<String, Void, String> {
     private static String TAG = "Adaer";
-    private MainActivity mainActivity;
+    private String URL = "http://www.olcayergun.com/4.php";
+    private AppCompatActivity activity;
 
-    SendDeviceDetails(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    public SendDeviceDetails(AppCompatActivity activity) {
+        this.activity = activity;
     }
 
     @Override
     protected String doInBackground(String... params) {
         String data = "";
-
-        HttpURLConnection httpURLConnection = null;
         try {
-            URL url = new URL(params[0]);
+            URL url = new URL(URL);
 
             // Create the urlConnection
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -38,9 +39,9 @@ class SendDeviceDetails extends AsyncTask<String, Void, String> {
             urlConnection.setRequestMethod("POST");
 
             // Send the post body
-            if (params[1] != null) {
+            if (params[0] != null) {
                 OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-                writer.write(params[1]);
+                writer.write(params[0]);
                 writer.flush();
             }
 
@@ -63,10 +64,6 @@ class SendDeviceDetails extends AsyncTask<String, Void, String> {
             }
         } catch (Exception e) {
             Log.d(TAG, "", e);
-        } finally {
-            if (httpURLConnection != null) {
-                httpURLConnection.disconnect();
-            }
         }
         return data;
     }
@@ -75,10 +72,10 @@ class SendDeviceDetails extends AsyncTask<String, Void, String> {
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
         Log.d(TAG, result); // this is expecting a response code to be sent from your server upon receiving the POST data
-        Handler handler = new Handler(mainActivity.getApplicationContext().getMainLooper());
+        Handler handler = new Handler(activity.getApplicationContext().getMainLooper());
         handler.post(new Runnable() {
             public void run() {
-                Toast.makeText(mainActivity.getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                Toast.makeText(activity.getApplicationContext(), result, Toast.LENGTH_LONG).show();
             }
         });
     }

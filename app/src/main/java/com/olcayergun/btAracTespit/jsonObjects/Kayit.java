@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class Kayit {
     private static String TAG = "Adaer";
-    private boolean isSelected=false;
+    private boolean isSelected = false;
     private String plaka;
     private String urun;
     private String depo;
@@ -25,7 +25,7 @@ public class Kayit {
         return plaka;
     }
 
-    public void setPlaka(String plaka) {
+    private void setPlaka(String plaka) {
         this.plaka = plaka;
     }
 
@@ -33,7 +33,7 @@ public class Kayit {
         return urun;
     }
 
-    public void setUrun(String urun) {
+    private void setUrun(String urun) {
         this.urun = urun;
     }
 
@@ -41,7 +41,7 @@ public class Kayit {
         return depo;
     }
 
-    public void setDepo(String depo) {
+    private void setDepo(String depo) {
         this.depo = depo;
     }
 
@@ -49,7 +49,7 @@ public class Kayit {
         return zaman;
     }
 
-    public void setZaman(String zaman) {
+    private void setZaman(String zaman) {
         this.zaman = zaman;
     }
 
@@ -63,14 +63,29 @@ public class Kayit {
 
     public Kayit(JSONObject obj) {
         try {
-            isSelected = obj.getBoolean("isSelected");
-            plaka = obj.getString("plaka");
-            urun= obj.getString("urun");
-            depo= obj.getString("depo");
-            zaman= obj.getString("zaman");
-            isSend = obj.getBoolean("isSend");
+            setSelected(obj.getBoolean("isSelected"));
+            setPlaka(obj.getString("plaka"));
+            setUrun(obj.getString("urun"));
+            setDepo(obj.getString("depo"));
+            setZaman(obj.getString("zaman"));
+            setSend(obj.getBoolean("isSend"));
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }
+    }
+
+    public JSONObject getJSONObject() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("isSelected", isSelected());
+            jsonObject.put("plaka", getPlaka());
+            jsonObject.put("urun", getUrun());
+            jsonObject.put("depo", getDepo());
+            jsonObject.put("zaman", getZaman());
+            jsonObject.put("isSend", isSend());
+        } catch (Exception e) {
+            Log.e(TAG, ", e");
+        }
+        return jsonObject;
     }
 }

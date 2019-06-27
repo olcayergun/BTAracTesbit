@@ -67,12 +67,11 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <CheckBox
-            android:id="@+id/cbGonderildi"
+        <TextView
+            android:id="@+id/tvGonderildi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Gönderildi." />
+            android:text="Gönderilmedi" />
     </LinearLayout>
 
 </LinearLayout>

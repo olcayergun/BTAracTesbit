@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.olcayergun.btAracTespit.MainActivity">
+    tools:context="com.olcayergun.btAracTespit.MListActivity">
 
     <ListView
         android:layout_width="match_parent"
@@ -22,17 +22,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/select"
-            android:text="Select all"/>
+            android:text="Hepsini Seç"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/deselect"
-            android:text="Deselct all"/>
+            android:text="Hiçbirini Seç"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/next"
-            android:text="Next activity"/>
+            android:text="Gönder"/>
 
 
     </LinearLayout>

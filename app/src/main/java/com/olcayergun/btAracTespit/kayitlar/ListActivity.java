@@ -1,16 +1,17 @@
 package com.olcayergun.btAracTespit.kayitlar;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.olcayergun.btAracTespit.MainActivity;
 import com.olcayergun.btAracTespit.R;
+import com.olcayergun.btAracTespit.SendDeviceDetails;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
 import org.json.JSONArray;
@@ -25,10 +26,8 @@ public class ListActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
 
     private ListView lv;
-    private ArrayList<Model> modelArrayList;
     private ArrayList<Kayit> kayitArrayList;
     private CustomAdapter customAdapter;
-    private String[] animallist = new String[]{"Lion", "Tiger", "Leopard", "Cat"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,49 +40,48 @@ public class ListActivity extends AppCompatActivity {
         Button btndeselect = findViewById(R.id.deselect);
         Button btnnext = findViewById(R.id.next);
 
-       // modelArrayList = getModel(false);
-       // customAdapter = new CustomAdapter(this, modelArrayList);
-        kayitArrayList = getKayitlar();
+        kayitArrayList = getKayitlar(false);
         customAdapter = new CustomAdapter(this, kayitArrayList);
         lv.setAdapter(customAdapter);
 
         btnselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //modelArrayList = getModel(true);
-                //customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
-                //lv.setAdapter(customAdapter);
+                kayitArrayList = getKayitlar(true);
+                customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
+                lv.setAdapter(customAdapter);
             }
         });
         btndeselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //modelArrayList = getModel(false);
-                //customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
-                //lv.setAdapter(customAdapter);
+                kayitArrayList = getKayitlar(false);
+                customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
+                lv.setAdapter(customAdapter);
             }
         });
         btnnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ListActivity.this, NextActivity.class);
-                startActivity(intent);
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
+                    if (CustomAdapter.kayitArrayList.get(i).isSelected()) {
+                        Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                        kayit.setSend(true);
+                        jsonArray.put(kayit);
+                    }
+                }
+                if (jsonArray.length() == 0) {
+                    Toast.makeText(getApplicationContext(), "Gönderilmek için kayıt seçilmedi.", Toast.LENGTH_LONG).show();
+                } else {
+                    SendDeviceDetails sendDeviceDetails = new SendDeviceDetails(ListActivity.this);
+                    sendDeviceDetails.execute(jsonArray.toString());
+                }
             }
         });
     }
 
-    private ArrayList<Model> getModel(boolean isSelect) {
-        ArrayList<Model> list = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            Model model = new Model();
-            model.setSelected(isSelect);
-            model.setAnimal(animallist[i]);
-            list.add(model);
-        }
-        return list;
-    }
-
-    private ArrayList<Kayit> getKayitlar() {
+    private ArrayList<Kayit> getKayitlar(boolean isSelected) {
         ArrayList<Kayit> list = new ArrayList<>();
         StringBuilder retBuf = new StringBuilder();
         try {
@@ -102,6 +100,7 @@ public class ListActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         Kayit kayit = new Kayit(jsonObject);
+                        kayit.setSelected(isSelected);
                         list.add(kayit);
                     }
                 }

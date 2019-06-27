@@ -176,10 +176,6 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(btReceiver, BTfilter);
         Log.d(TAG, "Registered BT");
 
-        IntentFilter NetworkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(NetworkChangeReceiver, NetworkFilter);
-        Log.d(TAG, "Registereted Network");
-
         dosyadanBilgileriAl();
     }
 
@@ -188,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         try {
             unregisterReceiver(btReceiver);
-            unregisterReceiver(NetworkChangeReceiver);
         } catch (Exception e) {
             Log.e(TAG, "", e);
         }
@@ -428,26 +423,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     //Boardcaat Reciever
-    //NT
-    private final BroadcastReceiver NetworkChangeReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null || intent.getExtras() == null) {
-                return;
-            }
-
-            String action = intent.getAction();
-            Log.i(TAG, "An network intent action : ".concat(action != null ? action : ""));
-/*
-            ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
-            if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                Log.i(TAG, "Wifi Etkin");
-                webServistenBilgileriAl();
-            }
-*/
-        }
-    };
-
     //BT
     private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {

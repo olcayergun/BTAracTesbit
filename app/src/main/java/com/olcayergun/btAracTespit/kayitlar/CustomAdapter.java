@@ -17,14 +17,8 @@ import java.util.ArrayList;
 public class CustomAdapter extends BaseAdapter {
 
     private Context context;
-    //public static ArrayList<Model> kayitArrayList;
     public static ArrayList<Kayit> kayitArrayList;
-/*
-    public CustomAdapter(Context context, ArrayList<Model> kayitArrayList) {
-        this.context = context;
-        this.kayitArrayList = kayitArrayList;
-    }
-*/
+
     public CustomAdapter(Context context, ArrayList<Kayit> kayitArrayList) {
         this.context = context;
         CustomAdapter.kayitArrayList = kayitArrayList;
@@ -64,11 +58,8 @@ public class CustomAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater != null ? inflater.inflate(R.layout.lv_item, null, true) : null;
 
-            holder.checkBox = convertView.findViewById(R.id.cbItem);
-            holder.tvAnimal = convertView.findViewById(R.id.tvPlaka);
-
             holder.cbItem = convertView.findViewById(R.id.cbItem);
-            holder.cbGonderildi = convertView.findViewById(R.id.cbGonderildi);
+            holder.tvGonderildi = convertView.findViewById(R.id.tvGonderildi);
             holder.tvPlaka = convertView.findViewById(R.id.tvPlaka);
             holder.tvUrun = convertView.findViewById(R.id.tvUrun);
             holder.tvDepo = convertView.findViewById(R.id.tvDepo);
@@ -80,20 +71,23 @@ public class CustomAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.checkBox.setText("Checkbox ".concat(Integer.toString(position)));
-        holder.tvAnimal.setText(kayitArrayList.get(position).getUrun());
+        holder.tvPlaka.setText(kayitArrayList.get(position).getPlaka());
+        holder.tvUrun.setText(kayitArrayList.get(position).getUrun());
+        holder.tvDepo.setText(kayitArrayList.get(position).getDepo());
+        holder.tvZaman.setText(kayitArrayList.get(position).getZaman());
 
-        holder.checkBox.setChecked(kayitArrayList.get(position).isSelected());
+        holder.cbItem.setChecked(kayitArrayList.get(position).isSelected());
+        holder.tvGonderildi.setText(kayitArrayList.get(position).isSend()?"Gönderildi.":"Gönderilmedi.");
 
-        holder.checkBox.setTag(R.integer.btnplusview, convertView);
-        holder.checkBox.setTag(position);
-        holder.checkBox.setOnClickListener(new View.OnClickListener() {
+        holder.cbItem.setTag(R.integer.btnplusview, convertView);
+        holder.cbItem.setTag(position);
+        holder.cbItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View tempview = (View) holder.checkBox.getTag(R.integer.btnplusview);
+                View tempview = (View) holder.cbItem.getTag(R.integer.btnplusview);
                 TextView tv = tempview.findViewById(R.id.tvPlaka);
-                Integer pos = (Integer) holder.checkBox.getTag();
-                Toast.makeText(context, "Checkbox " + pos + " clicked!".concat(tv.getText().toString()), Toast.LENGTH_SHORT).show();
+                Integer pos = (Integer) holder.cbItem.getTag();
+                //Toast.makeText(context, "Checkbox " + pos + " clicked!".concat(tv.getText().toString()), Toast.LENGTH_SHORT).show();
 
                 if (kayitArrayList.get(pos).isSelected()) {
                     kayitArrayList.get(pos).setSelected(false);
@@ -106,7 +100,7 @@ public class CustomAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private CheckBox checkBox, cbItem, cbGonderildi;
-        private TextView tvAnimal, tvPlaka, tvDepo, tvUrun, tvZaman;
+        private CheckBox cbItem;
+        private TextView tvGonderildi, tvPlaka, tvDepo, tvUrun, tvZaman;
     }
 }
