@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class Kayit {
     private static String TAG = "Adaer";
-    private boolean isSelected;
+    private boolean isSelected=false;
     private String plaka;
     private String urun;
     private String depo;

@@ -247,9 +247,15 @@ public class MainActivity extends AppCompatActivity {
                             postData.put("isSend", false);
                             postData.put("zaman", getCurrentTimestamp());
                             String fileData = "";
-                            FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
-                            fileData = readFromFileInputStream(fileInputStream);
-                            JSONArray jsonArray = new JSONArray(fileData);
+                            JSONArray jsonArray;
+                            try {
+                                FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
+                                fileData = readFromFileInputStream(fileInputStream);
+                                jsonArray = new JSONArray(fileData);
+                            } catch (Exception e) {
+                                Log.e(TAG, "", e);
+                                jsonArray = new JSONArray();
+                            }
                             jsonArray.put(postData);
                             localdosyasil(SENDFILEURL[1]);
                             localdosyaurunyaz(SENDFILEURL[1], jsonArray.toString());
@@ -308,8 +314,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
+            tvNTDurum.setText(R.string.YEREL_BİLGİLER_ALINDI);
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
+            tvNTDurum.setText(R.string.YEREL_BİLGİLER_ALINAMADI);
         }
     }
 
@@ -451,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
                 mDeviceList.clear();
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.i(TAG, "Discovery is stoped.");
-                tvBTDurumu.setText("Cihaz araması durdu...");
+                tvBTDurumu.setText(R.string.CİHAZ_ARAMASI_DURDU);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {

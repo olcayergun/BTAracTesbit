@@ -15,11 +15,11 @@ public class NextActivity extends AppCompatActivity {
         setContentView(R.layout.activity_next);
 
         TextView tv = findViewById(R.id.tv);
-
+/*
         for (int i = 0; i < CustomAdapter.modelArrayList.size(); i++){
             if(CustomAdapter.modelArrayList.get(i).getSelected()) {
                 tv.setText(tv.getText() + " " + CustomAdapter.modelArrayList.get(i).getAnimal());
             }
         }
-    }
+*/    }
 }

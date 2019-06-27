@@ -13,9 +13,11 @@ import com.olcayergun.btAracTespit.MainActivity;
 import com.olcayergun.btAracTespit.R;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -30,6 +32,7 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "ListActivity is starting");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
@@ -38,25 +41,26 @@ public class ListActivity extends AppCompatActivity {
         Button btndeselect = findViewById(R.id.deselect);
         Button btnnext = findViewById(R.id.next);
 
-        modelArrayList = getModel(false);
-        customAdapter = new CustomAdapter(this, modelArrayList);
-        kayitArrayList = getKayitlar(false);
+       // modelArrayList = getModel(false);
+       // customAdapter = new CustomAdapter(this, modelArrayList);
+        kayitArrayList = getKayitlar();
+        customAdapter = new CustomAdapter(this, kayitArrayList);
         lv.setAdapter(customAdapter);
 
         btnselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                modelArrayList = getModel(true);
-                customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
-                lv.setAdapter(customAdapter);
+                //modelArrayList = getModel(true);
+                //customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
+                //lv.setAdapter(customAdapter);
             }
         });
         btndeselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                modelArrayList = getModel(false);
-                customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
-                lv.setAdapter(customAdapter);
+                //modelArrayList = getModel(false);
+                //customAdapter = new CustomAdapter(ListActivity.this, modelArrayList);
+                //lv.setAdapter(customAdapter);
             }
         });
         btnnext.setOnClickListener(new View.OnClickListener() {
@@ -79,8 +83,8 @@ public class ListActivity extends AppCompatActivity {
         return list;
     }
 
-    private ArrayList getKayitlar(boolean isSelect) {
-        ArrayList list = new ArrayList();
+    private ArrayList<Kayit> getKayitlar() {
+        ArrayList<Kayit> list = new ArrayList<>();
         StringBuilder retBuf = new StringBuilder();
         try {
             FileInputStream fileInputStream = getApplication().openFileInput(MainActivity.SENDFILEURL[1]);
@@ -93,8 +97,16 @@ public class ListActivity extends AppCompatActivity {
                     retBuf.append(lineData);
                     lineData = bufferedReader.readLine();
                 }
+                if (retBuf.length() > 0) {
+                    JSONArray jsonArray = new JSONArray(retBuf.toString());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Kayit kayit = new Kayit(jsonObject);
+                        list.add(kayit);
+                    }
+                }
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
         }
         return list;

@@ -5,4 +5,7 @@
     <string name="tv2">textview22222222222222222</string>
     <string name="BILGILER_ALINIYOR">Bilgiler alınıyor.</string>
     <string name="CIHAZ_ARANIYOR">Cihaz aranıyor...</string>
+    <string name="CİHAZ_ARAMASI_DURDU">Cihaz araması durdu...</string>
+    <string name="YEREL_BİLGİLER_ALINAMADI">Yerel bilgiler alınamadı!!!</string>
+    <string name="YEREL_BİLGİLER_ALINDI">Yerel bilgiler alındı.</string>
 </resources>

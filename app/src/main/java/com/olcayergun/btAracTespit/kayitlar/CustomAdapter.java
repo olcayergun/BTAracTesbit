@@ -10,17 +10,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.olcayergun.btAracTespit.R;
+import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
 import java.util.ArrayList;
 
 public class CustomAdapter extends BaseAdapter {
 
     private Context context;
-    public static ArrayList<Model> modelArrayList;
-
-    public CustomAdapter(Context context, ArrayList<Model> modelArrayList) {
+    //public static ArrayList<Model> kayitArrayList;
+    public static ArrayList<Kayit> kayitArrayList;
+/*
+    public CustomAdapter(Context context, ArrayList<Model> kayitArrayList) {
         this.context = context;
-        this.modelArrayList = modelArrayList;
+        this.kayitArrayList = kayitArrayList;
+    }
+*/
+    public CustomAdapter(Context context, ArrayList<Kayit> kayitArrayList) {
+        this.context = context;
+        CustomAdapter.kayitArrayList = kayitArrayList;
     }
 
     @Override
@@ -35,12 +42,12 @@ public class CustomAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return modelArrayList.size();
+        return kayitArrayList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return modelArrayList.get(position);
+        return kayitArrayList.get(position);
     }
 
     @Override
@@ -57,8 +64,15 @@ public class CustomAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater != null ? inflater.inflate(R.layout.lv_item, null, true) : null;
 
-            holder.checkBox = convertView.findViewById(R.id.cb);
-            holder.tvAnimal = convertView.findViewById(R.id.animal);
+            holder.checkBox = convertView.findViewById(R.id.cbItem);
+            holder.tvAnimal = convertView.findViewById(R.id.tvPlaka);
+
+            holder.cbItem = convertView.findViewById(R.id.cbItem);
+            holder.cbGonderildi = convertView.findViewById(R.id.cbGonderildi);
+            holder.tvPlaka = convertView.findViewById(R.id.tvPlaka);
+            holder.tvUrun = convertView.findViewById(R.id.tvUrun);
+            holder.tvDepo = convertView.findViewById(R.id.tvDepo);
+            holder.tvZaman = convertView.findViewById(R.id.tvZaman);
 
             convertView.setTag(holder);
         } else {
@@ -67,9 +81,9 @@ public class CustomAdapter extends BaseAdapter {
         }
 
         holder.checkBox.setText("Checkbox ".concat(Integer.toString(position)));
-        holder.tvAnimal.setText(modelArrayList.get(position).getAnimal());
+        holder.tvAnimal.setText(kayitArrayList.get(position).getUrun());
 
-        holder.checkBox.setChecked(modelArrayList.get(position).getSelected());
+        holder.checkBox.setChecked(kayitArrayList.get(position).isSelected());
 
         holder.checkBox.setTag(R.integer.btnplusview, convertView);
         holder.checkBox.setTag(position);
@@ -77,14 +91,14 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 View tempview = (View) holder.checkBox.getTag(R.integer.btnplusview);
-                TextView tv = tempview.findViewById(R.id.animal);
+                TextView tv = tempview.findViewById(R.id.tvPlaka);
                 Integer pos = (Integer) holder.checkBox.getTag();
                 Toast.makeText(context, "Checkbox " + pos + " clicked!".concat(tv.getText().toString()), Toast.LENGTH_SHORT).show();
 
-                if (modelArrayList.get(pos).getSelected()) {
-                    modelArrayList.get(pos).setSelected(false);
+                if (kayitArrayList.get(pos).isSelected()) {
+                    kayitArrayList.get(pos).setSelected(false);
                 } else {
-                    modelArrayList.get(pos).setSelected(true);
+                    kayitArrayList.get(pos).setSelected(true);
                 }
             }
         });
@@ -92,7 +106,7 @@ public class CustomAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private CheckBox checkBox;
-        private TextView tvAnimal;
+        private CheckBox checkBox, cbItem, cbGonderildi;
+        private TextView tvAnimal, tvPlaka, tvDepo, tvUrun, tvZaman;
     }
 }
