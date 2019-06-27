@@ -68,7 +68,7 @@ public class ListActivity extends AppCompatActivity {
                     if (CustomAdapter.kayitArrayList.get(i).isSelected()) {
                         Kayit kayit = CustomAdapter.kayitArrayList.get(i);
                         kayit.setSend(true);
-                        jsonArray.put(kayit);
+                        jsonArray.put(kayit.getJSONObject());
                     }
                 }
                 if (jsonArray.length() == 0) {
