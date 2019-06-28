@@ -8,4 +8,9 @@
     <string name="CİHAZ_ARAMASI_DURDU">Cihaz araması durdu...</string>
     <string name="YEREL_BİLGİLER_ALINAMADI">Yerel bilgiler alınamadı!!!</string>
     <string name="YEREL_BİLGİLER_ALINDI">Yerel bilgiler alındı.</string>
+    <string name="BT_ACINIZ">Bluetooth açınız.</string>
+    <string name="BT_BULUNAMADI">Bluetooth bulunamadı.</string>
+    <string name="BILGILER_ALINAMADI">Bilgiler alınamadı.</string>
+    <string name="BILGILER_ALINDI">Bilgiler alındı.</string>
+    <string name="CIHAZ_ARANIYOR">Cihaz aranıyor...</string>
 </resources>

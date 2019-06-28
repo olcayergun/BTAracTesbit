@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         while (mBluetoothAdapter.isDiscovering()) {
         }
 
-        ArrayList<String> keys = new ArrayList<String>(hmUrun.keySet());
+        ArrayList<String> keys = new ArrayList<>(hmUrun.keySet());
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
@@ -218,10 +218,10 @@ public class MainActivity extends AppCompatActivity {
                 tvBTDurumu.setText(R.string.CIHAZ_ARANIYOR);
                 State = 0;
             } else {
-                tvBTDurumu.setText("Bluetooth açınız.");
+                tvBTDurumu.setText(R.string.BT_ACINIZ);
             }
         } else {
-            tvBTDurumu.setText("Bluetooth bulunamadı.");
+            tvBTDurumu.setText(R.string.BT_BULUNAMADI);
         }
         bGeri.setEnabled(false);
     }
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                             postData.put("isSelected", false);
                             postData.put("isSend", false);
                             postData.put("zaman", getCurrentTimestamp());
-                            String fileData = "";
+                            String fileData;
                             JSONArray jsonArray;
                             try {
                                 FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Urun u = new Urun(jo);
-                            hmUrun.put((String)jo.get("STOK_ADI"), u);
+                            hmUrun.put((String) jo.get("STOK_ADI"), u);
                         }
                         break;
                     case "depolar.txt":
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Depo d = new Depo(jo);
-                            hmDepo.put((String)jo.get("DEPO_ISMI"), d);
+                            hmDepo.put((String) jo.get("DEPO_ISMI"), d);
                         }
                         break;
                     case "plakalar.txt":
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
-                            hmPlaka.put((String)jo.get("BLUETOOTH"), p);
+                            hmPlaka.put((String) jo.get("BLUETOOTH"), p);
                         }
                         break;
                 }
@@ -327,13 +327,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (null == sa) {
                     Log.e(TAG, "Bilgiler alınamadı.");
-                    tvNTDurum.setText("Bilgiler alınamadı.");
+                    tvNTDurum.setText(R.string.BILGILER_ALINAMADI);
                 } else {
-                    for (int i=0;i<sa.length;i++ ) {
+                    for (int i = 0; i < sa.length; i++) {
                         localdosyaurunyaz(URLSFILES[1][0], sa[i]);
                     }
                     dosyadanBilgileriAl();
-                    tvNTDurum.setText("Bilgiler alındı.");
+                    tvNTDurum.setText(R.string.BILGILER_ALINDI);
                 }
             }
         });
@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "An intent action : ".concat(action != null ? action : ""));
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 Log.i(TAG, "Discovery is started.");
-                tvBTDurumu.setText("Cihaz aranıyor...");
+                tvBTDurumu.setText(R.string.CIHAZ_ARANIYOR);
                 mDeviceList.clear();
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.i(TAG, "Discovery is stoped.");
@@ -446,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
                 //bluetooth device found
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (null != device) {
-                    Plaka plaka = (Plaka) hmPlaka.get(device.getAddress());
+                    Plaka plaka = hmPlaka.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
                         sPlaka = "Bulunamadı.";
