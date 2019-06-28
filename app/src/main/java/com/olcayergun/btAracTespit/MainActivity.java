@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static String[][] URLSFILES = {{"http://www.olcayergun.com/urun.html", "http://www.olcayergun.com/depo.html", "http://www.olcayergun.com/plaka.html"},
             {"urunler.txt", "depolar.txt", "plakalar.txt"}};
-    public static String[] SENDFILEURL = {"", "bilgi.txt"};
+    public static String[] SENDFILEURL = {"http://www.olcayergun.com/4.php", "bilgi.txt"};
 
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /////
+        ///
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -319,16 +319,19 @@ public class MainActivity extends AppCompatActivity {
     private void webServistenBilgileriAl() {
         Log.d(TAG, "onExampleAsyncTaskStarted ");
         tvNTDurum.setText("Ağ bağlanıldı.");
-        GetJSON asyncTask = new GetJSON(this);
-        asyncTask.setListener(new GetJSON.ExampleAsyncTaskListener() {
+        GetJSON asyncTask = new GetJSON();
+        asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
-            public void onExampleAsyncTaskFinished(String s) {
-                Log.d(TAG, "onExampleAsyncTaskFinished " + s);
+            public void onAsyncTaskFinished(String[] sa) {
+                Log.d(TAG, "onAsyncTaskFinished " + sa.length);
 
-                if (!s.equals("OK")) {
+                if (null == sa) {
                     Log.e(TAG, "Bilgiler alınamadı.");
                     tvNTDurum.setText("Bilgiler alınamadı.");
                 } else {
+                    for (int i=0;i<sa.length;i++ ) {
+                        localdosyaurunyaz(URLSFILES[1][0], sa[i]);
+                    }
                     dosyadanBilgileriAl();
                     tvNTDurum.setText("Bilgiler alındı.");
                 }
@@ -385,19 +388,13 @@ public class MainActivity extends AppCompatActivity {
         return retBuf.toString();
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     private String getCurrentTimestamp() {
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         return dateFormat.format(date);
     }
 
-    private void localdosyasil(String filename) {
+    public void localdosyasil(String filename) {
         try {
             File dir = getApplicationContext().getFilesDir();
             File file = new File(dir, filename);
@@ -409,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void localdosyaurunyaz(String filename, String textToWrite) {
+    public void localdosyaurunyaz(String filename, String textToWrite) {
         try {
             localdosyasil(filename);
             FileOutputStream outputStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);

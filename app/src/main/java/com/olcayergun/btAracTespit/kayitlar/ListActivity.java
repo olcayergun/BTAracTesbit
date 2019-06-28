@@ -1,5 +1,6 @@
 package com.olcayergun.btAracTespit.kayitlar;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -39,15 +42,16 @@ public class ListActivity extends AppCompatActivity {
         Button btnselect = findViewById(R.id.select);
         Button btndeselect = findViewById(R.id.deselect);
         Button btnnext = findViewById(R.id.next);
+        Button btnsil = findViewById(R.id.sil);
 
-        kayitArrayList = getKayitlar(false);
+        kayitArrayList = getKayitlar(2);
         customAdapter = new CustomAdapter(this, kayitArrayList);
         lv.setAdapter(customAdapter);
 
         btnselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                kayitArrayList = getKayitlar(true);
+                kayitArrayList = getKayitlar(1);
                 customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
                 lv.setAdapter(customAdapter);
             }
@@ -55,7 +59,7 @@ public class ListActivity extends AppCompatActivity {
         btndeselect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                kayitArrayList = getKayitlar(false);
+                kayitArrayList = getKayitlar(0);
                 customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
                 lv.setAdapter(customAdapter);
             }
@@ -65,8 +69,8 @@ public class ListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
-                    if (CustomAdapter.kayitArrayList.get(i).isSelected()) {
-                        Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                    Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                    if (kayit.isSelected()) {
                         kayit.setSend(true);
                         jsonArray.put(kayit.getJSONObject());
                     }
@@ -74,14 +78,50 @@ public class ListActivity extends AppCompatActivity {
                 if (jsonArray.length() == 0) {
                     Toast.makeText(getApplicationContext(), "Gönderilmek için kayıt seçilmedi.", Toast.LENGTH_LONG).show();
                 } else {
-                    SendDeviceDetails sendDeviceDetails = new SendDeviceDetails(ListActivity.this);
+                    SendDeviceDetails sendDeviceDetails = new SendDeviceDetails();
                     sendDeviceDetails.execute(jsonArray.toString());
+                    sendDeviceDetails.setListener(new SendDeviceDetails.AsyncTaskListener() {
+                        @Override
+                        public void onAsyncTaskFinished(String s) {
+                            Log.d(TAG, "onAsyncTaskFinished " + s);
+                            JSONArray jsonArray = new JSONArray();
+                            localdosyasil(MainActivity.SENDFILEURL[1]);
+                            for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
+                                Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                                if (kayit.isSelected()) {
+                                    kayit.setSend(true);
+                                }
+                                jsonArray.put(kayit.getJSONObject());
+                            }
+                            localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
+                            customAdapter.notifyDataSetChanged();
+                            Toast.makeText(getApplicationContext(), "Kayıtlar gönderildi ve kayıt güncellendi.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+        btnsil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final JSONArray jsonArray = new JSONArray();
+                for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
+                    if (CustomAdapter.kayitArrayList.get(i).isSelected()) {
+                        Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                        kayit.setSend(true);
+                        jsonArray.put(kayit.getJSONObject());
+                    }
+                }
+                if (jsonArray.length() == 0) {
+                    Toast.makeText(getApplicationContext(), "Sil için kayıt seçilmedi.", Toast.LENGTH_LONG).show();
+                } else {
+
                 }
             }
         });
     }
 
-    private ArrayList<Kayit> getKayitlar(boolean isSelected) {
+    private ArrayList<Kayit> getKayitlar(int iSelected) {
         ArrayList<Kayit> list = new ArrayList<>();
         StringBuilder retBuf = new StringBuilder();
         try {
@@ -100,7 +140,17 @@ public class ListActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         Kayit kayit = new Kayit(jsonObject);
-                        kayit.setSelected(isSelected);
+                        switch (iSelected) {
+                            case 0:
+                                kayit.setSelected(false);
+                                break;
+                            case 1:
+                                kayit.setSelected(true);
+                                break;
+                            case 2:
+                                kayit.setSelected(kayit.isSend());
+                                break;
+                        }
                         list.add(kayit);
                     }
                 }
@@ -111,4 +161,28 @@ public class ListActivity extends AppCompatActivity {
         return list;
 
     }
+    public void localdosyasil(String filename) {
+        try {
+            File dir = getApplicationContext().getFilesDir();
+            File file = new File(dir, filename);
+            boolean deleted = file.delete();
+            Log.i(TAG, filename.concat(" dosya silme SONUCU: ".concat(Boolean.toString(deleted))));
+
+        } catch (Exception e) {
+            Log.i(TAG, filename.concat("dosya silme hatası"), e);
+        }
+    }
+
+    public void localdosyaurunyaz(String filename, String textToWrite) {
+        try {
+            localdosyasil(filename);
+            FileOutputStream outputStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(textToWrite.getBytes());
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            Log.i(TAG, filename.concat("dosya yazma hatası"), e);
+        }
+    }
+
 }

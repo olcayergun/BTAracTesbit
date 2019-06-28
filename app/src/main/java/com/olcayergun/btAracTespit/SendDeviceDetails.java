@@ -1,11 +1,7 @@
 package com.olcayergun.btAracTespit;
 
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -18,18 +14,13 @@ import java.net.URL;
 
 public class SendDeviceDetails extends AsyncTask<String, Void, String> {
     private static String TAG = "Adaer";
-    private String URL = "http://www.olcayergun.com/4.php";
-    private AppCompatActivity activity;
-
-    public SendDeviceDetails(AppCompatActivity activity) {
-        this.activity = activity;
-    }
+    private AsyncTaskListener listener;
 
     @Override
     protected String doInBackground(String... params) {
         String data = "";
         try {
-            URL url = new URL(URL);
+            URL url = new URL(MainActivity.SENDFILEURL[0]);
 
             // Create the urlConnection
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -72,12 +63,17 @@ public class SendDeviceDetails extends AsyncTask<String, Void, String> {
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
         Log.d(TAG, result); // this is expecting a response code to be sent from your server upon receiving the POST data
-        Handler handler = new Handler(activity.getApplicationContext().getMainLooper());
-        handler.post(new Runnable() {
-            public void run() {
-                Toast.makeText(activity.getApplicationContext(), result, Toast.LENGTH_LONG).show();
-            }
-        });
+        if (listener != null) {
+            listener.onAsyncTaskFinished(result);
+        }
+    }
+
+    public void setListener(AsyncTaskListener listener) {
+        this.listener = listener;
+    }
+
+    public interface AsyncTaskListener {
+        void onAsyncTaskFinished(String string);
     }
 }
 
