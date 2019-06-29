@@ -14,11 +14,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
-    private Button bGeri;
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
 
@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
                     bilgileriKayitEt();
 
-                    bGeri.setEnabled(false);
                     if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
                         mBluetoothAdapter.startDiscovery();
                     }
@@ -116,51 +115,6 @@ public class MainActivity extends AppCompatActivity {
         tvNTDurum.setText("");
         tvBTDurumu = findViewById(R.id.tv2);
         tvBTDurumu.setText("");
-
-        //////
-        bGeri = findViewById(R.id.bGeri);
-        bGeri.setEnabled(false);
-        bGeri.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                State--;
-                if (State < 0) {
-                    State = 0;
-                } else if (0 == State) {
-                    startBTDiscovery();
-                } else if (1 == State) {
-                    state1Process();
-                }
-            }
-        });
-
-        /////
-        Button bKayitlar = findViewById(R.id.bKayitlar);
-        bKayitlar.setEnabled(true);
-        bKayitlar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Log.d(TAG, "Showing recods!!!1");
-                Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
-                startActivity(myIntent);
-            }
-        });
-
-        ////
-        Button bGuncelle = findViewById(R.id.bGüncelle);
-        bGuncelle.setEnabled(true);
-        bGuncelle.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Log.d(TAG, "Update info!!!1");
-                ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
-                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                    Log.i(TAG, "Wifi Etkin");
-                    tvNTDurum.setText(R.string.BILGILER_ALINIYOR);
-                    webServistenBilgileriAl();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
 
         /////
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
@@ -177,6 +131,49 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Registered BT");
 
         dosyadanBilgileriAl();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menuGuncelle:
+                Log.d(TAG, "Update info!!!1");
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
+                if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                    Log.i(TAG, "Wifi Etkin");
+                    tvNTDurum.setText(R.string.BILGILER_ALINIYOR);
+                    webServistenBilgileriAl();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Bağlantı yok!!!", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case R.id.menuKAYITLAR:
+                Log.d(TAG, "Showing recods!!!1");
+                Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
+                startActivity(myIntent);
+                return true;
+            case R.id.menuGeri:
+                Log.d(TAG, "Go back!!!1");
+                State--;
+                if (State < 0) {
+                    State = 0;
+                } else if (0 == State) {
+                    startBTDiscovery();
+                } else if (1 == State) {
+                    state1Process();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -204,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
-        bGeri.setEnabled(true);
         Log.d(TAG, "4");
     }
 
@@ -223,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvBTDurumu.setText(R.string.BT_BULUNAMADI);
         }
-        bGeri.setEnabled(false);
     }
 
     //
@@ -318,19 +313,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void webServistenBilgileriAl() {
         Log.d(TAG, "onExampleAsyncTaskStarted ");
-        tvNTDurum.setText("Ağ bağlanıldı.");
+        tvNTDurum.setText(R.string.AGA_BAGLANILDI);
         GetJSON asyncTask = new GetJSON();
         asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
             public void onAsyncTaskFinished(String[] sa) {
                 Log.d(TAG, "onAsyncTaskFinished " + sa.length);
 
-                if (null == sa) {
+                if (sa == null) {
                     Log.e(TAG, "Bilgiler alınamadı.");
                     tvNTDurum.setText(R.string.BILGILER_ALINAMADI);
                 } else {
                     for (int i = 0; i < sa.length; i++) {
-                        localdosyaurunyaz(URLSFILES[1][0], sa[i]);
+                        localdosyaurunyaz(URLSFILES[1][i], sa[i]);
                     }
                     dosyadanBilgileriAl();
                     tvNTDurum.setText(R.string.BILGILER_ALINDI);
@@ -449,18 +444,23 @@ public class MainActivity extends AppCompatActivity {
                     Plaka plaka = hmPlaka.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
-                        sPlaka = "Bulunamadı.";
-                    } else {
+                        sPlaka = "Bulunamadı.(".concat(device.getAddress()).concat(")");
+                    }
+                    /*else {
                         if (-1 != mDeviceList.indexOf("Bulunamadı.")) {
                             mDeviceList.clear();
                         }
                     }
+                    */
                     String s = sPlaka.concat("  ").concat("[").concat(device.getName().concat("-").concat(device.getAddress())).concat("]");
                     Log.i(TAG, "A device is discovered : ".concat(s));
                     if (-1 == mDeviceList.indexOf(sPlaka)) {
                         mDeviceList.add(sPlaka);
                         listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
+                        Log.i(TAG, sPlaka+" listeye ekleniyor"+mDeviceList.size());
                     }
+                } else {
+                    Log.d(TAG, "Device tanımadı.");
                 }
             }
         }

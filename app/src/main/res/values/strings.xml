@@ -12,5 +12,8 @@
     <string name="BT_BULUNAMADI">Bluetooth bulunamadı.</string>
     <string name="BILGILER_ALINAMADI">Bilgiler alınamadı.</string>
     <string name="BILGILER_ALINDI">Bilgiler alındı.</string>
-    <string name="CIHAZ_ARANIYOR">Cihaz aranıyor...</string>
+    <string name="MENU_GUNCELLE">Güncelle</string>
+    <string name="MENU_KAYITLAR">Kayıtlar</string>
+    <string name="MENU_GERI">Geri</string>
+    <string name="AGA_BAGLANILDI">Ağ bağlanıldı.</string>
 </resources>
