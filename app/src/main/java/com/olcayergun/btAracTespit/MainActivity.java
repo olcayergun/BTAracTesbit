@@ -50,7 +50,10 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQ_BT_ENABLE = 1;
+    private boolean isMainActivity = true;
     private static String TAG = "Adaer";
+    private static String BULUNAMADI = "Bulunamadı";
     BluetoothAdapter mBluetoothAdapter = null;
 
     private int State = 0; //0:Plaka Seçimi, 1:Ürün Seçimi, 2:Hedef Seçimi
@@ -81,11 +84,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = ((TextView) view).getText().toString();
-                if (item.equals("Bulunamadı.")) {
+                Log.i(TAG, "A click on : ".concat(item).concat(" State:").concat(Integer.toString(State)));
+                if (item.startsWith(BULUNAMADI)) {
                     return;
                 }
-                Log.i(TAG, "A click on : ".concat(item).concat(" State:").concat(Integer.toString(State)));
+
                 if (State == 0) {
+                    //
                     sSendData[State] = item;
                     State = 1;
                     state1Process();
@@ -99,8 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (State == 2) {
                     sSendData[State] = item;
                     State = 0;
-                    Toast.makeText(MainActivity.this, sSendData[0].concat(sSendData[1]).concat(sSendData[2]), Toast.LENGTH_LONG).show();
-
                     bilgileriKayitEt();
 
                     if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
@@ -141,10 +144,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.menuGuncelle:
-                Log.d(TAG, "Update info!!!1");
+                Log.d(TAG, "Update info!!!");
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = cm != null ? cm.getActiveNetworkInfo() : null;
                 if (networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) {
@@ -156,20 +158,16 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menuKAYITLAR:
-                Log.d(TAG, "Showing recods!!!1");
+                Log.d(TAG, "Showing recods!!!");
+                if (mBluetoothAdapter.isDiscovering()) {
+                    isMainActivity = false;
+                    mBluetoothAdapter.cancelDiscovery();
+                }
                 Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
                 startActivity(myIntent);
                 return true;
             case R.id.menuGeri:
-                Log.d(TAG, "Go back!!!1");
-                State--;
-                if (State < 0) {
-                    State = 0;
-                } else if (0 == State) {
-                    startBTDiscovery();
-                } else if (1 == State) {
-                    state1Process();
-                }
+                goBack();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -186,22 +184,50 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onBackPressed() {
+        goBack();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQ_BT_ENABLE) {
+            if (resultCode == RESULT_OK) {
+                startBTDiscovery();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Bletooth aktif edilmedi!!!", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }//onActivityResult
+
     //////////////////////////////////////////////////
     //yardımcı metotlar.
     //////////////////////////////////////////////////
+
+    private void goBack() {
+        Log.d(TAG, "Go back!!!");
+        State--;
+        if (State < 0) {
+            State = 0;
+        } else if (0 == State) {
+            startBTDiscovery();
+        } else if (1 == State) {
+            state1Process();
+        }
+    }
+
     //
     private void state1Process() {
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
         }
-        while (mBluetoothAdapter.isDiscovering()) {
-        }
-
         ArrayList<String> keys = new ArrayList<>(hmUrun.keySet());
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
-        Log.d(TAG, "4");
+        while (mBluetoothAdapter.isDiscovering()) {
+        }
     }
 
     //
@@ -215,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                 State = 0;
             } else {
                 tvBTDurumu.setText(R.string.BT_ACINIZ);
+                startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), REQ_BT_ENABLE);
             }
         } else {
             tvBTDurumu.setText(R.string.BT_BULUNAMADI);
@@ -414,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //Boardcaat Reciever
+    //Boardcaat Reciev"er
     //BT
     private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -432,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     Log.e(TAG, "", e);
                 }
-                if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
+                if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering() && isMainActivity) {
                     if (State == 0) {
                         mBluetoothAdapter.startDiscovery();
                     }
@@ -444,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
                     Plaka plaka = hmPlaka.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
-                        sPlaka = "Bulunamadı.(".concat(device.getAddress()).concat(")");
+                        sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(")");
                     }
                     /*else {
                         if (-1 != mDeviceList.indexOf("Bulunamadı.")) {
@@ -457,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
                     if (-1 == mDeviceList.indexOf(sPlaka)) {
                         mDeviceList.add(sPlaka);
                         listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
-                        Log.i(TAG, sPlaka+" listeye ekleniyor"+mDeviceList.size());
+                        Log.i(TAG, sPlaka + " listeye ekleniyor");
                     }
                 } else {
                     Log.d(TAG, "Device tanımadı.");

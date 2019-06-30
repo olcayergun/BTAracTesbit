@@ -1,10 +1,12 @@
 package com.olcayergun.btAracTespit.kayitlar;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -12,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.olcayergun.btAracTespit.MainActivity;
 import com.olcayergun.btAracTespit.R;
-import com.olcayergun.btAracTespit.SendDeviceDetails;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 
 import org.json.JSONArray;
@@ -39,53 +40,51 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         lv = findViewById(R.id.lv);
-        Button btnselect = findViewById(R.id.select);
-        Button btndeselect = findViewById(R.id.deselect);
-        Button btnnext = findViewById(R.id.next);
-        Button btnsil = findViewById(R.id.sil);
-
         kayitArrayList = getKayitlar(2);
         customAdapter = new CustomAdapter(this, kayitArrayList);
         lv.setAdapter(customAdapter);
+    }
 
-        btnselect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.listmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuSelect:
+                Log.d(TAG, "Select All!!!");
                 kayitArrayList = getKayitlar(1);
                 customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
                 lv.setAdapter(customAdapter);
-            }
-        });
-        btndeselect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                return true;
+            case R.id.menuDeselect:
+                Log.d(TAG, "Delesct All!!!");
                 kayitArrayList = getKayitlar(0);
                 customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);
                 lv.setAdapter(customAdapter);
-            }
-        });
-        btnnext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                return true;
+            case R.id.menuGonder:
+                Log.d(TAG, "Send!!!");
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
                     Kayit kayit = CustomAdapter.kayitArrayList.get(i);
-                    if (kayit.isSelected()) {
+                    if (kayit.isSelected() && !kayit.isSend()) {
                         kayit.setSend(true);
                         jsonArray.put(kayit.getJSONObject());
                     }
                 }
                 if (jsonArray.length() == 0) {
-                    Toast.makeText(getApplicationContext(), "Gönderilmek için kayıt seçilmedi.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Gönderilmek için kayıt seçilmedi yada \nsadece önceden gönderilmiş kayıtlar seçildi..", Toast.LENGTH_LONG).show();
                 } else {
                     SendDeviceDetails sendDeviceDetails = new SendDeviceDetails();
-                    sendDeviceDetails.execute(jsonArray.toString());
                     sendDeviceDetails.setListener(new SendDeviceDetails.AsyncTaskListener() {
                         @Override
                         public void onAsyncTaskFinished(String s) {
                             Log.d(TAG, "onAsyncTaskFinished " + s);
                             JSONArray jsonArray = new JSONArray();
-                            localdosyasil(MainActivity.SENDFILEURL[1]);
                             for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
                                 Kayit kayit = CustomAdapter.kayitArrayList.get(i);
                                 if (kayit.isSelected()) {
@@ -93,32 +92,90 @@ public class ListActivity extends AppCompatActivity {
                                 }
                                 jsonArray.put(kayit.getJSONObject());
                             }
+                            localdosyasil(MainActivity.SENDFILEURL[1]);
                             localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
                             customAdapter.notifyDataSetChanged();
                             Toast.makeText(getApplicationContext(), "Kayıtlar gönderildi ve kayıt güncellendi.", Toast.LENGTH_LONG).show();
                         }
                     });
+                    sendDeviceDetails.execute(jsonArray.toString());
                 }
-            }
-        });
-        btnsil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final JSONArray jsonArray = new JSONArray();
+                return true;
+            case R.id.menuSil:
+                Log.d(TAG, "Delete!!!");
+                boolean bGonderilmemisUyarisi = false;
+                boolean bSecilmemisUyarisi = true;
                 for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
                     if (CustomAdapter.kayitArrayList.get(i).isSelected()) {
+                        bSecilmemisUyarisi = false;
                         Kayit kayit = CustomAdapter.kayitArrayList.get(i);
-                        kayit.setSend(true);
-                        jsonArray.put(kayit.getJSONObject());
+                        if (!kayit.isSend()) {
+                            bGonderilmemisUyarisi = true;
+                        }
                     }
                 }
-                if (jsonArray.length() == 0) {
+                if (bSecilmemisUyarisi) {
+                    Log.d(TAG, "No selection...");
                     Toast.makeText(getApplicationContext(), "Sil için kayıt seçilmedi.", Toast.LENGTH_LONG).show();
-                } else {
+                } else if (bGonderilmemisUyarisi) {
+                    Log.d(TAG, "Some records are not sent yet");
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    silSecilenKayitlar();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
+                        }
+                    };
 
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+                    builder.setMessage("Gönderilmemiş kayıtlar var. Silinsin mi?").setPositiveButton("Evet", dialogClickListener)
+                            .setNegativeButton("Hayır", dialogClickListener).show();
+
+                } else {
+                    silSecilenKayitlar();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void silSecilenKayitlar() {
+        Log.d(TAG, "Asking for Delete!!!");
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Log.d(TAG, "Real Delete!!!");
+
+                        JSONArray jsonArray = new JSONArray();
+                        for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
+                            Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                            if (kayit.isSelected()) {
+                                CustomAdapter.kayitArrayList.remove(i);
+                            } else {
+                                jsonArray.put(kayit.getJSONObject());
+                            }
+                        }
+                        localdosyasil(MainActivity.SENDFILEURL[1]);
+                        localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
+                        customAdapter.notifyDataSetChanged();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
                 }
             }
-        });
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+        builder.setMessage("Seçilen kayıtlar silinsin mi?").setPositiveButton("Evet", dialogClickListener)
+                .setNegativeButton("Hayır", dialogClickListener).show();
     }
 
     private ArrayList<Kayit> getKayitlar(int iSelected) {
@@ -161,6 +218,7 @@ public class ListActivity extends AppCompatActivity {
         return list;
 
     }
+
     public void localdosyasil(String filename) {
         try {
             File dir = getApplicationContext().getFilesDir();

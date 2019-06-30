@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menuSelect"
+        android:title="@string/HEPSINI_SEC"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menuDeselect"
+        android:title="@string/HICBIRINI_SEC"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menuGonder"
+        android:title="@string/GONDER"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menuSil"
+        android:title="@string/SIL"
+        app:showAsAction="never" />
+</menu>

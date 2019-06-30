@@ -16,4 +16,8 @@
     <string name="MENU_KAYITLAR">Kayıtlar</string>
     <string name="MENU_GERI">Geri</string>
     <string name="AGA_BAGLANILDI">Ağ bağlanıldı.</string>
+    <string name="HEPSINI_SEC">Hepsini Seç</string>
+    <string name="HICBIRINI_SEC">Hiçbirini Seç</string>
+    <string name="GONDER">Gönder</string>
+    <string name="SIL">Sil</string>
 </resources>

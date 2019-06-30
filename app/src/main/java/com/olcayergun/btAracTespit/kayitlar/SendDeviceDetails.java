@@ -1,7 +1,9 @@
-package com.olcayergun.btAracTespit;
+package com.olcayergun.btAracTespit.kayitlar;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.olcayergun.btAracTespit.MainActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

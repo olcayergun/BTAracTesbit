@@ -1,13 +1,13 @@
 package com.olcayergun.btAracTespit.kayitlar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.olcayergun.btAracTespit.R;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
@@ -77,7 +77,14 @@ public class CustomAdapter extends BaseAdapter {
         holder.tvZaman.setText(kayitArrayList.get(position).getZaman());
 
         holder.cbItem.setChecked(kayitArrayList.get(position).isSelected());
-        holder.tvGonderildi.setText(kayitArrayList.get(position).isSend()?"Gönderildi.":"Gönderilmedi.");
+        if (kayitArrayList.get(position).isSend()) {
+            holder.tvGonderildi.setText("Gönderildi.");
+            holder.tvGonderildi.setTextColor(Color.GREEN);
+        } else {
+            holder.tvGonderildi.setText("Gönderilmedi.");
+            holder.tvGonderildi.setTextColor(Color.MAGENTA);
+        }
+
 
         holder.cbItem.setTag(R.integer.btnplusview, convertView);
         holder.cbItem.setTag(position);
