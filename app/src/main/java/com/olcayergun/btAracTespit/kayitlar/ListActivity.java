@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ListActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
@@ -124,7 +125,7 @@ public class ListActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case DialogInterface.BUTTON_POSITIVE:
-                                    silSecilenKayitlar();
+                                    delete();
                                     break;
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     break;
@@ -137,7 +138,19 @@ public class ListActivity extends AppCompatActivity {
                             .setNegativeButton("Hayır", dialogClickListener).show();
 
                 } else {
-                    silSecilenKayitlar();
+                    Log.d(TAG, "Asking for Delete!!!");
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    delete();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
+                        }
+                    };
                 }
                 return true;
             default:
@@ -145,37 +158,23 @@ public class ListActivity extends AppCompatActivity {
         }
     }
 
-    private void silSecilenKayitlar() {
-        Log.d(TAG, "Asking for Delete!!!");
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        Log.d(TAG, "Real Delete!!!");
+    private void delete() {
+        Log.d(TAG, "Real Delete!!!");
 
-                        JSONArray jsonArray = new JSONArray();
-                        for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
-                            Kayit kayit = CustomAdapter.kayitArrayList.get(i);
-                            if (kayit.isSelected()) {
-                                CustomAdapter.kayitArrayList.remove(i);
-                            } else {
-                                jsonArray.put(kayit.getJSONObject());
-                            }
-                        }
-                        localdosyasil(MainActivity.SENDFILEURL[1]);
-                        localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
-                        customAdapter.notifyDataSetChanged();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
+        JSONArray jsonArray = new JSONArray();
+        Iterator<Kayit> it = CustomAdapter.kayitArrayList.iterator();
+        while (it.hasNext()) {
+            Kayit kayit = it.next(); // must be called before you can call i.remove()
+            if (kayit.isSelected()) {
+                it.remove();
+            } else {
+                jsonArray.put(kayit.getJSONObject());
             }
-        };
+        }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-        builder.setMessage("Seçilen kayıtlar silinsin mi?").setPositiveButton("Evet", dialogClickListener)
-                .setNegativeButton("Hayır", dialogClickListener).show();
+        localdosyasil(MainActivity.SENDFILEURL[1]);
+        localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
+        customAdapter.notifyDataSetChanged();
     }
 
     private ArrayList<Kayit> getKayitlar(int iSelected) {

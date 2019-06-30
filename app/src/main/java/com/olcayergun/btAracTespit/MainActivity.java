@@ -159,10 +159,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.menuKAYITLAR:
                 Log.d(TAG, "Showing recods!!!");
-                if (mBluetoothAdapter.isDiscovering()) {
-                    isMainActivity = false;
-                    mBluetoothAdapter.cancelDiscovery();
-                }
                 Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
                 startActivity(myIntent);
                 return true;
@@ -200,6 +196,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }//onActivityResult
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume...");
+        isMainActivity = true;
+        startBTDiscovery();
+    }
 
     //////////////////////////////////////////////////
     //yardımcı metotlar.
