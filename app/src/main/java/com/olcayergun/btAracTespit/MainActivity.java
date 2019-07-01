@@ -424,7 +424,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String readFromFileInputStream(FileInputStream fileInputStream) {
         StringBuilder retBuf = new StringBuilder();
-
         try {
             if (fileInputStream != null) {
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
@@ -499,22 +498,18 @@ public class MainActivity extends AppCompatActivity {
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                String sDeviceName = device.getName() == null ? "null" : device.getName();
-                Log.d(TAG, "Device Name :".concat(sDeviceName));
-                String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
-                Log.d(TAG, "Device Address :".concat(sDeviceAddress));
                 if (null != device) {
+                    String sDeviceName = device.getName() == null ? "null" : device.getName();
+                    Log.d(TAG, "Device Name :".concat(sDeviceName));
+                    String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
+                    Log.d(TAG, "Device Address :".concat(sDeviceAddress));
+
                     Plaka plaka = hmPlaka.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
                         sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(")");
                     }
-                    /*else {
-                        if (-1 != mDeviceList.indexOf("Bulunamadı.")) {
-                            mDeviceList.clear();
-                        }
-                    }
-                    */
+
                     String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
                     Log.i(TAG, "A device is discovered : ".concat(s));
                     if (-1 == mDeviceList.indexOf(sPlaka)) {

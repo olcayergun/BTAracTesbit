@@ -13,6 +13,63 @@ public class Kayit {
     private String zaman;
     private boolean isSend;
 
+    //
+    private String CIKIS_YERI;
+    private String VARDIYA;
+    private String VARDIYA_SORUMLUSU;
+    private String URETIM_BOLUMU;
+
+    public String getCIKIS_YERI() {
+        return CIKIS_YERI;
+    }
+
+    public void setCIKIS_YERI(String CIKIS_YERI) {
+        this.CIKIS_YERI = CIKIS_YERI;
+    }
+
+    public String getVARDIYA() {
+        return VARDIYA;
+    }
+
+    public void setVARDIYA(String VARDIYA) {
+        this.VARDIYA = VARDIYA;
+    }
+
+    public String getVARDIYA_SORUMLUSU() {
+        return VARDIYA_SORUMLUSU;
+    }
+
+    public void setVARDIYA_SORUMLUSU(String VARDIYA_SORUMLUSU) {
+        this.VARDIYA_SORUMLUSU = VARDIYA_SORUMLUSU;
+    }
+
+    public String getURETIM_BOLUMU() {
+        return URETIM_BOLUMU;
+    }
+
+    public void setURETIM_BOLUMU(String URETIM_BOLUMU) {
+        this.URETIM_BOLUMU = URETIM_BOLUMU;
+    }
+
+    public String getURETIM_SORUMLUSU() {
+        return URETIM_SORUMLUSU;
+    }
+
+    public void setURETIM_SORUMLUSU(String URETIM_SORUMLUSU) {
+        this.URETIM_SORUMLUSU = URETIM_SORUMLUSU;
+    }
+
+    public String getMAKINE_ADI() {
+        return MAKINE_ADI;
+    }
+
+    public void setMAKINE_ADI(String MAKINE_ADI) {
+        this.MAKINE_ADI = MAKINE_ADI;
+    }
+
+    private String URETIM_SORUMLUSU;
+    private String MAKINE_ADI;
+
     public boolean isSelected() {
         return isSelected;
     }
@@ -69,6 +126,12 @@ public class Kayit {
             setDepo(obj.getString("depo"));
             setZaman(obj.getString("zaman"));
             setSend(obj.getBoolean("isSend"));
+            setCIKIS_YERI(obj.getString("CIKIS_YERI"));
+            setVARDIYA(obj.getString("VARDIYA"));
+            setVARDIYA_SORUMLUSU(obj.getString("VARDIYA_SORUMLUSU"));
+            setURETIM_BOLUMU(obj.getString("URETIM_BOLUMU"));
+            setURETIM_SORUMLUSU(obj.getString("URETIM_SORUMLUSU"));
+            setMAKINE_ADI(obj.getString("MAKINE_ADI"));
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }
@@ -83,6 +146,12 @@ public class Kayit {
             jsonObject.put("depo", getDepo());
             jsonObject.put("zaman", getZaman());
             jsonObject.put("isSend", isSend());
+            jsonObject.put("CIKIS_YERI", getCIKIS_YERI());
+            jsonObject.put("VARDIYA", getVARDIYA());
+            jsonObject.put("VARDIYA_SORUMLUSU", getVARDIYA_SORUMLUSU());
+            jsonObject.put("URETIM_BOLUMU", getURETIM_BOLUMU());
+            jsonObject.put("URETIM_SORUMLUSU", getURETIM_SORUMLUSU());
+            jsonObject.put("MAKINE_ADI", getMAKINE_ADI());
         } catch (Exception e) {
             Log.e(TAG, ", e");
         }

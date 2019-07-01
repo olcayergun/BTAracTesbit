@@ -68,7 +68,7 @@ public class ListActivity extends AppCompatActivity {
                 lv.setAdapter(customAdapter);
                 return true;
             case R.id.menuGonder:
-                Log.d(TAG, "Send!!!");
+                Log.d(TAG, "Send Button!!!");
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
                     Kayit kayit = CustomAdapter.kayitArrayList.get(i);
