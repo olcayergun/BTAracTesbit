@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String getCurrentTimestamp() {
         Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         return dateFormat.format(date);
     }
 
@@ -472,7 +472,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, filename.concat("dosya yazma hatası"), e);
         }
     }
-
 
     //Boardcaat Reciev"er
     //BT
