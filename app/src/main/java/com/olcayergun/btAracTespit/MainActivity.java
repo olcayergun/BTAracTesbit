@@ -499,6 +499,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String sDeviceName = device.getName() == null ? "null" : device.getName();
+                Log.d(TAG, "Device Name :".concat(sDeviceName));
+                String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
+                Log.d(TAG, "Device Address :".concat(sDeviceAddress));
                 if (null != device) {
                     Plaka plaka = hmPlaka.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
@@ -511,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     */
-                    String s = sPlaka.concat("  ").concat("[").concat(device.getName().concat("-").concat(device.getAddress())).concat("]");
+                    String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
                     Log.i(TAG, "A device is discovered : ".concat(s));
                     if (-1 == mDeviceList.indexOf(sPlaka)) {
                         mDeviceList.add(sPlaka);
