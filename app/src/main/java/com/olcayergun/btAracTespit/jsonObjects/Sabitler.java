@@ -11,7 +11,31 @@ public class Sabitler {
     private String VARDIYA_SORUMLUSU;
     private String URETIM_BOLUMU;
     private String URETIM_SORUMLUSU;
-    private String MAKİNE_ADI;
+    private String MAKINE_ADI;
+
+    public String getCIKIS_YERI() {
+        return CIKIS_YERI;
+    }
+
+    public String getVARDIYA() {
+        return VARDIYA;
+    }
+
+    public String getVARDIYA_SORUMLUSU() {
+        return VARDIYA_SORUMLUSU;
+    }
+
+    public String getURETIM_BOLUMU() {
+        return URETIM_BOLUMU;
+    }
+
+    public String getURETIM_SORUMLUSU() {
+        return URETIM_SORUMLUSU;
+    }
+
+    public String getMAKINE_ADI() {
+        return MAKINE_ADI;
+    }
 
     public Sabitler(JSONObject obj) {
         try {
@@ -20,7 +44,7 @@ public class Sabitler {
             VARDIYA_SORUMLUSU = obj.getString("VARDIYA_SORUMLUSU");
             URETIM_BOLUMU = obj.getString("URETIM_BOLUMU");
             URETIM_SORUMLUSU = obj.getString("URETIM_SORUMLUSU");
-            MAKİNE_ADI = obj.getString("MAKİNE_ADI");
+            MAKINE_ADI = obj.getString("MAKINE_ADI");
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }

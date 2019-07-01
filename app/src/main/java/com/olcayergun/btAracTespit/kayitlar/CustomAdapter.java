@@ -78,10 +78,10 @@ public class CustomAdapter extends BaseAdapter {
 
         holder.cbItem.setChecked(kayitArrayList.get(position).isSelected());
         if (kayitArrayList.get(position).isSend()) {
-            holder.tvGonderildi.setText("Gönderildi.");
+            holder.tvGonderildi.setText(R.string.GONDERILDI);
             holder.tvGonderildi.setTextColor(Color.GREEN);
         } else {
-            holder.tvGonderildi.setText("Gönderilmedi.");
+            holder.tvGonderildi.setText(R.string.GONDERILDI);
             holder.tvGonderildi.setTextColor(Color.MAGENTA);
         }
 
@@ -91,11 +91,10 @@ public class CustomAdapter extends BaseAdapter {
         holder.cbItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View tempview = (View) holder.cbItem.getTag(R.integer.btnplusview);
-                TextView tv = tempview.findViewById(R.id.tvPlaka);
-                Integer pos = (Integer) holder.cbItem.getTag();
+                //View tempview = (View) holder.cbItem.getTag(R.integer.btnplusview);
+                //TextView tv = tempview.findViewById(R.id.tvPlaka);
                 //Toast.makeText(context, "Checkbox " + pos + " clicked!".concat(tv.getText().toString()), Toast.LENGTH_SHORT).show();
-
+                Integer pos = (Integer) holder.cbItem.getTag();
                 if (kayitArrayList.get(pos).isSelected()) {
                     kayitArrayList.get(pos).setSelected(false);
                 } else {

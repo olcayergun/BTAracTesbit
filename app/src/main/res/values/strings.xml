@@ -20,4 +20,5 @@
     <string name="HICBIRINI_SEC">Hiçbirini Seç</string>
     <string name="GONDER">Gönder</string>
     <string name="SIL">Sil</string>
+    <string name="GONDERILDI">Gönderildi.</string>
 </resources>

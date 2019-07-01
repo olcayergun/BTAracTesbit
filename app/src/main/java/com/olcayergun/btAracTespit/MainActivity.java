@@ -29,6 +29,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
+import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
 import com.olcayergun.btAracTespit.kayitlar.ListActivity;
 
@@ -61,10 +62,20 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, Urun> hmUrun = new HashMap<>();
     private HashMap<String, Depo> hmDepo = new HashMap<>();
     private HashMap<String, Plaka> hmPlaka = new HashMap<>();
+    private HashMap<String, Sabitler> hmSabitler = new HashMap<>();
     private String[] sSendData = new String[3];
 
-    private static String[][] URLSFILES = {{"http://www.olcayergun.com/urun.html", "http://www.olcayergun.com/depo.html", "http://www.olcayergun.com/plaka.html"},
-            {"urunler.txt", "depolar.txt", "plakalar.txt"}};
+    private static String[][] URLSFILES = {
+            {"http://www.olcayergun.com/urun.html",
+                    "http://www.olcayergun.com/depo.html",
+                    "http://www.olcayergun.com/plaka.html",
+                    "http://www.olcayergun.com/sabitler.html"
+            }, {
+            "urunler.txt",
+            "depolar.txt",
+            "plakalar.txt",
+            "sabitler.txt"
+    }};
     public static String[] SENDFILEURL = {"http://www.olcayergun.com/4.php", "bilgi.txt"};
 
     private ListView listView;
@@ -158,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menuKAYITLAR:
-                Log.d(TAG, "Showing recods!!!");
+                Log.d(TAG, "Showing records!!!");
                 Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
                 startActivity(myIntent);
                 return true;
@@ -259,14 +270,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        JSONObject postData = new JSONObject();
+                        JSONObject joBilgiler = new JSONObject();
                         try {
-                            postData.put("plaka", sSendData[0]);
-                            postData.put("urun", sSendData[1]);
-                            postData.put("depo", sSendData[2]);
-                            postData.put("isSelected", false);
-                            postData.put("isSend", false);
-                            postData.put("zaman", getCurrentTimestamp());
+                            joBilgiler.put("plaka", sSendData[0]);
+                            joBilgiler.put("urun", sSendData[1]);
+                            joBilgiler.put("depo", sSendData[2]);
+                            joBilgiler.put("isSelected", false);
+                            joBilgiler.put("isSend", false);
+                            joBilgiler.put("zaman", getCurrentTimestamp());
+                            Sabitler sabitler = hmSabitler.get("1");
+                            if (sabitler != null) {
+                                joBilgiler.put("CIKIS_YERI", sabitler.getCIKIS_YERI());
+                                joBilgiler.put("VARDIYA", sabitler.getVARDIYA());
+                                joBilgiler.put("VARDIYA_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
+                                joBilgiler.put("URETIM_BOLUMU", sabitler.getURETIM_BOLUMU());
+                                joBilgiler.put("URETIM_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
+                                joBilgiler.put("MAKINE_ADI", sabitler.getMAKINE_ADI());
+                            }
                             String fileData;
                             JSONArray jsonArray;
                             try {
@@ -277,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.e(TAG, "", e);
                                 jsonArray = new JSONArray();
                             }
-                            jsonArray.put(postData);
+                            jsonArray.put(joBilgiler);
                             localdosyasil(SENDFILEURL[1]);
                             localdosyaurunyaz(SENDFILEURL[1], jsonArray.toString());
                         } catch (Exception e) {
@@ -325,12 +345,21 @@ public class MainActivity extends AppCompatActivity {
                             hmDepo.put((String) jo.get("DEPO_ISMI"), d);
                         }
                         break;
+
                     case "plakalar.txt":
                         hmPlaka.clear();
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
                             hmPlaka.put((String) jo.get("BLUETOOTH"), p);
+                        }
+                        break;
+                    case "sabitler.txt":
+                        hmSabitler.clear();
+                        for (int i = 0; i < jsonObj.length(); i++) {
+                            JSONObject jo = jsonObj.getJSONObject(i);
+                            Sabitler s = new Sabitler(jo);
+                            hmSabitler.put("1", s);
                         }
                         break;
                 }

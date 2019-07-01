@@ -151,6 +151,9 @@ public class ListActivity extends AppCompatActivity {
                             }
                         }
                     };
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+                    builder.setMessage("Kayıtlar silinsin mi?").setPositiveButton("Evet", dialogClickListener)
+                            .setNegativeButton("Hayır", dialogClickListener).show();
                 }
                 return true;
             default:
