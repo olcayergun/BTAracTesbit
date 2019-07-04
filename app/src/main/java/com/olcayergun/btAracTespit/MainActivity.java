@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             "sabitler.txt"
     }};
     public static String[] SENDFILEURL = {"http://www.olcayergun.com/4.php", "bilgi.txt"};
+    private String sMakineNo;
 
     private ListView listView;
     private ArrayList<String> mDeviceList = new ArrayList<>();
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+        String sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
         ///
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -285,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                                 joBilgiler.put("VARDIYA_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
                                 joBilgiler.put("URETIM_BOLUMU", sabitler.getURETIM_BOLUMU());
                                 joBilgiler.put("URETIM_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
-                                joBilgiler.put("MAKINE_ADI", sabitler.getMAKINE_ADI());
+                                joBilgiler.put("MAKINE_ADI", sMakineNo);
                             }
                             String fileData;
                             JSONArray jsonArray;
