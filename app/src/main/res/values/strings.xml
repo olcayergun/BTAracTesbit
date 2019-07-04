@@ -22,4 +22,5 @@
     <string name="SIL">Sil</string>
     <string name="GONDERILDI">Gönderildi.</string>
     <string name="GONDERILMEDI">Gönderilmedi.</string>
+    <string name="title_activity_makine_no">MakineNoActivity</string>
 </resources>
