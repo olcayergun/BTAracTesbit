@@ -55,7 +55,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menuSelect:
+            case R.id.menuSettings:
                 Log.d(TAG, "Select All!!!");
                 kayitArrayList = getKayitlar(1);
                 customAdapter = new CustomAdapter(ListActivity.this, kayitArrayList);

@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_BT_ENABLE) {
             if (resultCode == RESULT_OK) {
                 startBTDiscovery();

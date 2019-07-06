@@ -23,4 +23,24 @@
     <string name="GONDERILDI">Gönderildi.</string>
     <string name="GONDERILMEDI">Gönderilmedi.</string>
     <string name="title_activity_makine_no">MakineNoActivity</string>
+    <string name="BAGLANTI_YOK">Bağlantı yok!!!</string>
+    <string name="SETTINGS">Ayarlar</string>
+    <string name="action_settings">Ayarlar</string>
+    <string name="display_text">Display Text</string>
+    <string name="title_activity_settings">Ayarlar</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

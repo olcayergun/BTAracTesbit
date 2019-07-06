@@ -30,7 +30,7 @@ public class GetJSON extends AsyncTask<String[][], Void, String[]> {
     @SuppressLint("WrongThread")
     @Override
     protected String[] doInBackground(String[][]... strings) {
-        String[] saResult= null;
+        String[] saResult = null;
         try {
             String[] saURLler = strings[0][0];
             URL url;
@@ -54,7 +54,7 @@ public class GetJSON extends AsyncTask<String[][], Void, String[]> {
                 saResult[i] = sb.toString().trim();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Notification - doInBackground...", e);
+            Log.e(TAG, "Exception - doInBackground...", e);
         }
         return saResult;
     }
