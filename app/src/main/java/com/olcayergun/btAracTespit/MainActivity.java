@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -65,18 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, Sabitler> hmSabitler = new HashMap<>();
     private String[] sSendData = new String[3];
 
-    private static String[][] URLSFILES = {
-            {"http://www.olcayergun.com/urun.html",
-                    "http://www.olcayergun.com/depo.html",
-                    "http://www.olcayergun.com/plaka.html",
-                    "http://www.olcayergun.com/sabitler.html"
-            }, {
-            "urunler.txt",
-            "depolar.txt",
-            "plakalar.txt",
-            "sabitler.txt"
-    }};
-    public static String[] SENDFILEURL = {"http://www.olcayergun.com/4.php", "bilgi.txt"};
+    private static String[][] URLSFILES = {{"", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt"}};
+    public static String[] SENDFILEURL = {"", "bilgi.txt"};
     private String sMakineNo;
 
     private ListView listView;
@@ -91,7 +82,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
+        sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
+
+        SharedPreferences sharedPref = getSharedPreferences(MakineNoActivity.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        URLSFILES[0][0] = sharedPref.getString(MakineNoActivity.URUN, "");
+        URLSFILES[0][1] = sharedPref.getString(MakineNoActivity.DEPO, "");
+        URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
+        URLSFILES[0][3] = sharedPref.getString(MakineNoActivity.SABITLER, "");
+        SENDFILEURL[0] = sharedPref.getString(MakineNoActivity.KAYIT, "");
+
         ///
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 startBTDiscovery();
             }
             if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(), "Bletooth aktif edilmedi!!!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Bluetooth aktif edilmedi!!!", Toast.LENGTH_LONG).show();
                 finish();
             }
         }

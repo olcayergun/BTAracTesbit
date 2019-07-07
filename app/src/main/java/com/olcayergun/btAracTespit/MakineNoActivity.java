@@ -15,17 +15,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MakineNoActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
     public static final String EXTRA_MESSAGE = "com.olcayergun.btAracTespit.extra.MAKINE_NO";
-    private final String PREFERENCE_FILE_KEY = "URLSOFURL";
-    private String sURL;
+    public static final String PREFERENCE_FILE_KEY = "PREFERENCESFILE";
+    public static final String MAKINE_NOLARI = "MAKINE_NOLARI";
+    public static final String SABITLER = "SABITLER";
+    public static final String PLAKALR = "PLAKALR";
+    public static final String DEPO = "DEPO";
+    public static final String URUN = "URUN";
+    public static final String KAYIT = "KAYIT";
     ListView listView;
 
     @Override
@@ -35,11 +40,11 @@ public class MakineNoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_makine_no);
 
         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-        sURL = sharedPref.getString(PREFERENCE_FILE_KEY, "");
+        String sURL = sharedPref.getString(PREFERENCE_FILE_KEY, "");
         if (sURL.equals("")) {
             getURL();
         } else {
-            getMakineKodular();
+            getURLler(sURL);
         }
     }
 
@@ -74,7 +79,7 @@ public class MakineNoActivity extends AppCompatActivity {
             View dialogView = inflater.inflate(R.layout.custom_dialog, null);
 
             final EditText editText = dialogView.findViewById(R.id.edt_comment);
-            editText.setText("http://www.olcayergun.com/makinenolari.html");
+            editText.setText("http://www.olcayergun.com/urller.html");
             Button BtnSubmit = dialogView.findViewById(R.id.buttonSubmit);
             Button btnCancel = dialogView.findViewById(R.id.buttonCancel);
 
@@ -82,24 +87,15 @@ public class MakineNoActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     dialogBuilder.dismiss();
-                    if (sURL.equals("")) {
-                        Toast.makeText(getApplicationContext(), "Bu uygulama kapanıyor...", Toast.LENGTH_LONG).show();
-                        finish();
-                        System.exit(0);
-                    }
                 }
             });
             BtnSubmit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dialogBuilder.dismiss();
-                    sURL = editText.getText().toString();
-                    if (sURL.equals("")) {
-                        Toast.makeText(getApplicationContext(), "Bu uygulama kapanıyor...", Toast.LENGTH_LONG).show();
-                        finish();
-                        System.exit(0);
-                    } else {
-                        getMakineKodular();
+                    String sURL = editText.getText().toString();
+                    if (!sURL.equals("")) {
+                        getURLler(sURL);
                     }
                 }
             });
@@ -112,7 +108,47 @@ public class MakineNoActivity extends AppCompatActivity {
         }
     }
 
-    private void getMakineKodular() {
+    private void getURLler(String sMainURL) {
+        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(PREFERENCE_FILE_KEY, sMainURL);
+        editor.apply();
+
+        GetJSON asyncTask = new GetJSON();
+        asyncTask.setListener(new GetJSON.AsyncTaskListener() {
+            @Override
+            public void onAsyncTaskFinished(String[] sa) {
+                Log.d(TAG, "getURLler : onAsyncTaskFinished " + sa.length);
+                try {
+                    JSONArray jsonArray = new JSONArray(sa[0]);
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(0);
+                    String sMAKINE_NOLARI = jsonObject.getString(MAKINE_NOLARI);
+                    String sSABITLER = jsonObject.getString(SABITLER);
+                    String sPLAKALR = jsonObject.getString(PLAKALR);
+                    String sDEPO = jsonObject.getString(DEPO);
+                    String sURUN = jsonObject.getString(URUN);
+                    String sKAYIT = jsonObject.getString(KAYIT);
+
+                    SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(MAKINE_NOLARI, sMAKINE_NOLARI);
+                    editor.putString(SABITLER, sSABITLER);
+                    editor.putString(PLAKALR, sPLAKALR);
+                    editor.putString(DEPO, sDEPO);
+                    editor.putString(URUN, sURUN);
+                    editor.putString(KAYIT, sKAYIT);
+                    editor.apply();
+                    getMakinecKodular();
+                } catch (Exception e) {
+                    Log.e(TAG, "", e);
+                }
+            }
+        });
+        String[][] URLSFILES = {{sMainURL}, {""}};
+        asyncTask.execute(URLSFILES);
+    }
+
+    private void getMakinecKodular() {
         GetJSON asyncTask = new GetJSON();
         asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
@@ -139,6 +175,8 @@ public class MakineNoActivity extends AppCompatActivity {
                 }
             }
         });
+        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        String sURL = sharedPref.getString("MAKINE_NOLARI", "");
         String[][] URLSFILES = {{sURL}, {""}};
         asyncTask.execute(URLSFILES);
         listView = findViewById(R.id.lvMakineNo);
