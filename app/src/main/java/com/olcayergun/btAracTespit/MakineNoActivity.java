@@ -25,6 +25,7 @@ public class MakineNoActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
     public static final String EXTRA_MESSAGE = "com.olcayergun.btAracTespit.extra.MAKINE_NO";
     public static final String PREFERENCE_FILE_KEY = "PREFERENCESFILE";
+    public static final String MAINURL = "MAIN_URL";
     public static final String MAKINE_NOLARI = "MAKINE_NOLARI";
     public static final String SABITLER = "SABITLER";
     public static final String PLAKALR = "PLAKALR";
@@ -40,7 +41,7 @@ public class MakineNoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_makine_no);
 
         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-        String sURL = sharedPref.getString(PREFERENCE_FILE_KEY, "");
+        String sURL = sharedPref.getString(MAINURL, "");
         if (sURL.equals("")) {
             getURL();
         } else {
@@ -99,7 +100,8 @@ public class MakineNoActivity extends AppCompatActivity {
                         getURLler(sURL);
                         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString(PREFERENCE_FILE_KEY, sURL);
+                        editor.putString(MAINURL, sURL);
+                        editor.commit();
                         editor.apply();
                     }
                 }
@@ -136,6 +138,7 @@ public class MakineNoActivity extends AppCompatActivity {
                     editor.putString(DEPO, sDEPO);
                     editor.putString(URUN, sURUN);
                     editor.putString(KAYIT, sKAYIT);
+                    editor.commit();
                     editor.apply();
                     getMakinecKodular();
                 } catch (Exception e) {
@@ -153,12 +156,6 @@ public class MakineNoActivity extends AppCompatActivity {
             @Override
             public void onAsyncTaskFinished(String[] sa) {
                 Log.d(TAG, "onAsyncTaskFinished " + sa.length);
-
-                SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(PREFERENCE_FILE_KEY, sa[0]);
-                editor.apply();
-
                 try {
                     JSONArray jsonArray = new JSONArray(sa[0]);
                     int l = jsonArray.length();
