@@ -83,6 +83,7 @@ public class MakineNoActivity extends AppCompatActivity {
             Button BtnSubmit = dialogView.findViewById(R.id.buttonSubmit);
             Button btnCancel = dialogView.findViewById(R.id.buttonCancel);
 
+
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -96,6 +97,10 @@ public class MakineNoActivity extends AppCompatActivity {
                     String sURL = editText.getText().toString();
                     if (!sURL.equals("")) {
                         getURLler(sURL);
+                        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(PREFERENCE_FILE_KEY, sURL);
+                        editor.apply();
                     }
                 }
             });
@@ -109,11 +114,6 @@ public class MakineNoActivity extends AppCompatActivity {
     }
 
     private void getURLler(String sMainURL) {
-        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(PREFERENCE_FILE_KEY, sMainURL);
-        editor.apply();
-
         GetJSON asyncTask = new GetJSON();
         asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
@@ -121,13 +121,12 @@ public class MakineNoActivity extends AppCompatActivity {
                 Log.d(TAG, "getURLler : onAsyncTaskFinished " + sa.length);
                 try {
                     JSONArray jsonArray = new JSONArray(sa[0]);
-                    JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-                    String sMAKINE_NOLARI = jsonObject.getString(MAKINE_NOLARI);
-                    String sSABITLER = jsonObject.getString(SABITLER);
-                    String sPLAKALR = jsonObject.getString(PLAKALR);
-                    String sDEPO = jsonObject.getString(DEPO);
-                    String sURUN = jsonObject.getString(URUN);
-                    String sKAYIT = jsonObject.getString(KAYIT);
+                    String sMAKINE_NOLARI = ((JSONObject) jsonArray.get(0)).getString("url");
+                    String sSABITLER = ((JSONObject) jsonArray.get(1)).getString("url");
+                    String sPLAKALR = ((JSONObject) jsonArray.get(2)).getString("url");
+                    String sDEPO = ((JSONObject) jsonArray.get(3)).getString("url");
+                    String sURUN = ((JSONObject) jsonArray.get(4)).getString("url");
+                    String sKAYIT = ((JSONObject) jsonArray.get(5)).getString("url");
 
                     SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
