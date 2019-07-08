@@ -162,7 +162,7 @@ public class MakineNoActivity extends AppCompatActivity {
                     String[] items = new String[l];
                     for (int i = 0; i < l; i++) {
                         JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                        items[i] = jsonArray.getString(i);
+                        items[i] = jsonObject.getString("makineno").concat(" ").concat(jsonObject.getString("makineisci"));
                     }
                     listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
                 } catch (Exception e) {
