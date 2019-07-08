@@ -6,45 +6,51 @@ import org.json.JSONObject;
 
 public class Sabitler {
     private static String TAG = "Adaer";
-    private String CIKIS_YERI;
-    private String VARDIYA;
-    private String VARDIYA_SORUMLUSU;
-    private String URETIM_BOLUMU;
-    private String URETIM_SORUMLUSU;
-    private String MAKINE_ADI;
+    private String calistigidepo;
+    private String vardiyagrubu;
+    private String vardiyasorumlusu;
+    private String uretimbolumu;
+    private String uretimsorumlusu;
+    private String makineno;
+    private String durumu;
 
-    public String getCIKIS_YERI() {
-        return CIKIS_YERI;
+    public String getCalistigidepo() {
+        return calistigidepo;
     }
 
-    public String getVARDIYA() {
-        return VARDIYA;
+    public String getVardiyagrubu() {
+        return vardiyagrubu;
     }
 
-    public String getVARDIYA_SORUMLUSU() {
-        return VARDIYA_SORUMLUSU;
+    public String getVardiyasorumlusu() {
+        return vardiyasorumlusu;
     }
 
-    public String getURETIM_BOLUMU() {
-        return URETIM_BOLUMU;
+    public String getUretimbolumu() {
+        return uretimbolumu;
     }
 
-    public String getURETIM_SORUMLUSU() {
-        return URETIM_SORUMLUSU;
+    public String getUretimsorumlusu() {
+        return uretimsorumlusu;
     }
 
-    public String getMAKINE_ADI() {
-        return MAKINE_ADI;
+    public String getMakineno() {
+        return makineno;
+    }
+
+    public String getDurumu() {
+        return durumu;
     }
 
     public Sabitler(JSONObject obj) {
         try {
-            CIKIS_YERI = obj.getString("CIKIS_YERI");
-            VARDIYA = obj.getString("VARDIYA");
-            VARDIYA_SORUMLUSU = obj.getString("VARDIYA_SORUMLUSU");
-            URETIM_BOLUMU = obj.getString("URETIM_BOLUMU");
-            URETIM_SORUMLUSU = obj.getString("URETIM_SORUMLUSU");
-            MAKINE_ADI = obj.getString("MAKINE_ADI");
+            calistigidepo = obj.getString("calistigidepo");
+            vardiyagrubu = obj.getString("vardiyagrubu");
+            vardiyasorumlusu = obj.getString("vardiyasorumlusu");
+            uretimbolumu = obj.getString("uretimbolumu");
+            uretimsorumlusu = obj.getString("uretimsorumlusu");
+            makineno = obj.getString("makineno");
+            durumu = obj.getString("durumu");
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }

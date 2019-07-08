@@ -283,11 +283,11 @@ public class MainActivity extends AppCompatActivity {
                             joBilgiler.put("zaman", getCurrentTimestamp());
                             Sabitler sabitler = hmSabitler.get("1");
                             if (sabitler != null) {
-                                joBilgiler.put("CIKIS_YERI", sabitler.getCIKIS_YERI());
-                                joBilgiler.put("VARDIYA", sabitler.getVARDIYA());
-                                joBilgiler.put("VARDIYA_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
-                                joBilgiler.put("URETIM_BOLUMU", sabitler.getURETIM_BOLUMU());
-                                joBilgiler.put("URETIM_SORUMLUSU", sabitler.getVARDIYA_SORUMLUSU());
+                                joBilgiler.put("CIKIS_YERI", sabitler.getCalistigidepo());
+                                joBilgiler.put("VARDIYA", sabitler.getVardiyagrubu());
+                                joBilgiler.put("VARDIYA_SORUMLUSU", sabitler.getVardiyasorumlusu());
+                                joBilgiler.put("URETIM_BOLUMU", sabitler.getUretimbolumu());
+                                joBilgiler.put("URETIM_SORUMLUSU", sabitler.getVardiyasorumlusu());
                                 joBilgiler.put("MAKINE_ADI", sMakineNo);
                             }
                             String fileData;
