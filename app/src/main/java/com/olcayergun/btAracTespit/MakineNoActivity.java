@@ -161,6 +161,7 @@ public class MakineNoActivity extends AppCompatActivity {
                     int l = jsonArray.length();
                     String[] items = new String[l];
                     for (int i = 0; i < l; i++) {
+                        JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                         items[i] = jsonArray.getString(i);
                     }
                     listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
