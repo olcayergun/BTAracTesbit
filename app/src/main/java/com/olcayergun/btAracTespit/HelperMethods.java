@@ -3,8 +3,12 @@ package com.olcayergun.btAracTespit;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class HelperMethods {
     private static String TAG = "Adaer";
@@ -31,6 +35,26 @@ public class HelperMethods {
         } catch (Exception e) {
             Log.i(TAG, filename.concat("dosya silme hatası"), e);
         }
+    }
+
+    public static String readFromFileInputStream(FileInputStream fileInputStream) {
+        StringBuilder retBuf = new StringBuilder();
+        try {
+            if (fileInputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                String lineData = bufferedReader.readLine();
+                while (lineData != null) {
+                    retBuf.append(lineData);
+                    lineData = bufferedReader.readLine();
+                }
+                fileInputStream.close();
+            }
+        } catch (IOException ex) {
+            Log.e(TAG, ex.getMessage(), ex);
+        }
+        return retBuf.toString();
     }
 
 }

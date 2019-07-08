@@ -37,10 +37,7 @@ import com.olcayergun.btAracTespit.kayitlar.ListActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -292,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray jsonArray;
                             try {
                                 FileInputStream fileInputStream = getApplication().openFileInput(SENDFILEURL[1]);
-                                fileData = readFromFileInputStream(fileInputStream);
+                                fileData = HelperMethods.readFromFileInputStream(fileInputStream);
                                 jsonArray = new JSONArray(fileData);
                             } catch (Exception e) {
                                 Log.e(TAG, "", e);
@@ -324,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Context ctx = getApplicationContext();
             FileInputStream fileInputStream = ctx.openFileInput(filename);
-            String fileData = readFromFileInputStream(fileInputStream);
+            String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
 
             if (fileData.length() > 0) {
                 Log.d(TAG, "Dosya okuma (" + filename + ")" + fileData);
@@ -421,26 +418,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         return arrayAdapter;
-    }
-
-    private String readFromFileInputStream(FileInputStream fileInputStream) {
-        StringBuilder retBuf = new StringBuilder();
-        try {
-            if (fileInputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                String lineData = bufferedReader.readLine();
-                while (lineData != null) {
-                    retBuf.append(lineData);
-                    lineData = bufferedReader.readLine();
-                }
-                fileInputStream.close();
-            }
-        } catch (IOException ex) {
-            Log.e(TAG, ex.getMessage(), ex);
-        }
-        return retBuf.toString();
     }
 
     private String getCurrentTimestamp() {

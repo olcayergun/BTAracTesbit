@@ -21,8 +21,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+
 public class MakineNoActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
+    private String FILE_MAKINENO = "file_makineno";
     public static final String EXTRA_MESSAGE = "com.olcayergun.btAracTespit.extra.MAKINE_NO";
     public static final String PREFERENCE_FILE_KEY = "PREFERENCESFILE";
     public static final String MAINURL = "MAIN_URL";
@@ -40,6 +43,13 @@ public class MakineNoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makine_no);
 
+        try {
+            FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
+            String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
+            putMakineNoIntoList(fileData);
+        } catch (Exception e) {
+            Log.e(TAG, "Getting Makine No from files.", e);
+        }
         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         String sURL = sharedPref.getString(MAINURL, "");
         if (sURL.equals("")) {
@@ -47,6 +57,20 @@ public class MakineNoActivity extends AppCompatActivity {
         } else {
             getURLler(sURL);
         }
+
+        listView = findViewById(R.id.lvMakineNo);
+        String[] mobileArray = {"Makine Noları alınıyor..."};
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                goNextActivity(item);
+            }
+
+        });
     }
 
     private void goNextActivity(String sMakineNo) {
@@ -101,7 +125,6 @@ public class MakineNoActivity extends AppCompatActivity {
                         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putString(MAINURL, sURL);
-                        editor.commit();
                         editor.apply();
                     }
                 }
@@ -138,9 +161,8 @@ public class MakineNoActivity extends AppCompatActivity {
                     editor.putString(DEPO, sDEPO);
                     editor.putString(URUN, sURUN);
                     editor.putString(KAYIT, sKAYIT);
-                    editor.commit();
                     editor.apply();
-                    getMakinecKodular();
+                    getMakineNolar();
                 } catch (Exception e) {
                     Log.e(TAG, "", e);
                 }
@@ -150,44 +172,37 @@ public class MakineNoActivity extends AppCompatActivity {
         asyncTask.execute(URLSFILES);
     }
 
-    private void getMakinecKodular() {
+    private void getMakineNolar() {
         GetJSON asyncTask = new GetJSON();
         asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
             public void onAsyncTaskFinished(String[] sa) {
                 Log.d(TAG, "onAsyncTaskFinished " + sa.length);
-                try {
-                    JSONArray jsonArray = new JSONArray(sa[0]);
-                    int l = jsonArray.length();
-                    String[] items = new String[l];
-                    for (int i = 0; i < l; i++) {
-                        JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                        items[i] = jsonObject.getString("makineno").concat(" ").concat(jsonObject.getString("makineisci"));
-                    }
-                    listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
-                } catch (Exception e) {
-                    Log.e(TAG, "", e);
-                    String[] mobileArray = {"Bağlantı yok..."};
-                    listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
-                }
+                HelperMethods.localdosyaurunyaz(getApplicationContext(), FILE_MAKINENO, sa[0]);
+                putMakineNoIntoList(sa[0]);
             }
         });
         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         String sURL = sharedPref.getString("MAKINE_NOLARI", "");
         String[][] URLSFILES = {{sURL}, {""}};
         asyncTask.execute(URLSFILES);
-        listView = findViewById(R.id.lvMakineNo);
-        String[] mobileArray = {"Makine Noları alınıyor..."};
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    }
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                goNextActivity(item);
+    private void putMakineNoIntoList(String s) {
+        Log.d(TAG, "Putting Makine Nos into List :" + s);
+        try {
+            JSONArray jsonArray = new JSONArray(s);
+            int l = jsonArray.length();
+            String[] items = new String[l];
+            for (int i = 0; i < l; i++) {
+                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                items[i] = jsonObject.getString("makineno").concat(" ").concat(jsonObject.getString("makineisci"));
             }
-
-        });
+            listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
+        } catch (Exception e) {
+            Log.e(TAG, "", e);
+            String[] mobileArray = {"Makine Noları alınamadı..."};
+            listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
+        }
     }
 }
