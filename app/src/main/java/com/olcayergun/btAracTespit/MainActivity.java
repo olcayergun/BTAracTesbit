@@ -276,6 +276,9 @@ public class MainActivity extends AppCompatActivity {
                             joBilgiler.put("isSelected", false);
                             joBilgiler.put("isSend", false);
                             joBilgiler.put("zaman", getCurrentTimestamp());
+                            joBilgiler.put("lokasyon_x", "xxx");
+                            joBilgiler.put("lokasyon_y", "yyy");
+                            joBilgiler.put("lokasyon_z", "zzz");
                             Sabitler sabitler = hmSabitler.get("1");
                             if (sabitler != null) {
                                 joBilgiler.put("CIKIS_YERI", sabitler.getCalistigidepo());
