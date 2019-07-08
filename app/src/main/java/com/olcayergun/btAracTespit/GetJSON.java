@@ -40,11 +40,13 @@ public class GetJSON extends AsyncTask<String[][], Void, String[]> {
             String json;
             saResult = new String[saURLler.length];
             for (int i = 0; i < saURLler.length; i++) {
-                Log.d(TAG, "url : ".concat(saURLler[i]));
+                Log.d(TAG, "Async Task Url : ".concat(saURLler[i]));
                 url = new URL(saURLler[i]);
                 con = (HttpURLConnection) url.openConnection();
-                sb.setLength(0);
+                int iResponseCode = con.getResponseCode();
+                Log.d(TAG, "Async Task Response Code: : ".concat(Integer.toString(iResponseCode)));
                 bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                sb.setLength(0);
                 while ((json = bufferedReader.readLine()) != null) {
                     sb.append(json).append("\n");
                 }
