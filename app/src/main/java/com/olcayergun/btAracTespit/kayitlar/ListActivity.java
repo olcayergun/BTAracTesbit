@@ -1,7 +1,6 @@
 package com.olcayergun.btAracTespit.kayitlar;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.olcayergun.btAracTespit.HelperMethods;
 import com.olcayergun.btAracTespit.MainActivity;
 import com.olcayergun.btAracTespit.R;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
@@ -20,12 +20,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static com.olcayergun.btAracTespit.HelperMethods.localdosyaurunyaz;
 
 public class ListActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
@@ -93,8 +93,8 @@ public class ListActivity extends AppCompatActivity {
                                 }
                                 jsonArray.put(kayit.getJSONObject());
                             }
-                            localdosyasil(MainActivity.SENDFILEURL[1]);
-                            localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
+                            HelperMethods.localdosyasil(getApplicationContext(), MainActivity.SENDFILEURL[1]);
+                            HelperMethods.localdosyaurunyaz(getApplicationContext(), MainActivity.SENDFILEURL[1], jsonArray.toString());
                             customAdapter.notifyDataSetChanged();
                             Toast.makeText(getApplicationContext(), "Kayıtlar gönderildi ve kayıt güncellendi.", Toast.LENGTH_LONG).show();
                         }
@@ -175,8 +175,8 @@ public class ListActivity extends AppCompatActivity {
             }
         }
 
-        localdosyasil(MainActivity.SENDFILEURL[1]);
-        localdosyaurunyaz(MainActivity.SENDFILEURL[1], jsonArray.toString());
+        HelperMethods.localdosyasil(getApplicationContext(), MainActivity.SENDFILEURL[1]);
+        localdosyaurunyaz(getApplicationContext(), MainActivity.SENDFILEURL[1], jsonArray.toString());
         customAdapter.notifyDataSetChanged();
     }
 
@@ -220,29 +220,4 @@ public class ListActivity extends AppCompatActivity {
         return list;
 
     }
-
-    public void localdosyasil(String filename) {
-        try {
-            File dir = getApplicationContext().getFilesDir();
-            File file = new File(dir, filename);
-            boolean deleted = file.delete();
-            Log.i(TAG, filename.concat(" dosya silme SONUCU: ".concat(Boolean.toString(deleted))));
-
-        } catch (Exception e) {
-            Log.i(TAG, filename.concat("dosya silme hatası"), e);
-        }
-    }
-
-    public void localdosyaurunyaz(String filename, String textToWrite) {
-        try {
-            localdosyasil(filename);
-            FileOutputStream outputStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(textToWrite.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            Log.i(TAG, filename.concat("dosya yazma hatası"), e);
-        }
-    }
-
 }

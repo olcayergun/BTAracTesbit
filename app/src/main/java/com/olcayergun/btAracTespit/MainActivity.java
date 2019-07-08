@@ -38,9 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
@@ -301,8 +299,8 @@ public class MainActivity extends AppCompatActivity {
                                 jsonArray = new JSONArray();
                             }
                             jsonArray.put(joBilgiler);
-                            localdosyasil(SENDFILEURL[1]);
-                            localdosyaurunyaz(SENDFILEURL[1], jsonArray.toString());
+                            HelperMethods.localdosyasil(getApplicationContext(), SENDFILEURL[1]);
+                            HelperMethods.localdosyaurunyaz(getApplicationContext(), SENDFILEURL[1], jsonArray.toString());
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
                         }
@@ -388,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
                     tvNTDurum.setText(R.string.BILGILER_ALINAMADI);
                 } else {
                     for (int i = 0; i < sa.length; i++) {
-                        localdosyaurunyaz(URLSFILES[1][i], sa[i]);
+                        HelperMethods.localdosyaurunyaz(getApplicationContext(), URLSFILES[1][i], sa[i]);
                     }
                     dosyadanBilgileriAl();
                     tvNTDurum.setText(R.string.BILGILER_ALINDI);
@@ -449,30 +447,6 @@ public class MainActivity extends AppCompatActivity {
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         return dateFormat.format(date);
-    }
-
-    public void localdosyasil(String filename) {
-        try {
-            File dir = getApplicationContext().getFilesDir();
-            File file = new File(dir, filename);
-            boolean deleted = file.delete();
-            Log.i(TAG, filename.concat(" dosya silme SONUCU: ".concat(Boolean.toString(deleted))));
-
-        } catch (Exception e) {
-            Log.i(TAG, filename.concat("dosya silme hatası"), e);
-        }
-    }
-
-    public void localdosyaurunyaz(String filename, String textToWrite) {
-        try {
-            localdosyasil(filename);
-            FileOutputStream outputStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(textToWrite.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            Log.i(TAG, filename.concat("dosya yazma hatası"), e);
-        }
     }
 
     //Boardcaat Reciev"er
