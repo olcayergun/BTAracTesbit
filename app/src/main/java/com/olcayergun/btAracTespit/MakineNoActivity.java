@@ -67,7 +67,8 @@ public class MakineNoActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                goNextActivity(item);
+                String[] sa = item.split(" ");
+                goNextActivity(sa[0]);
             }
 
         });

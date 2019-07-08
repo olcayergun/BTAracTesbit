@@ -98,19 +98,20 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (State == 0) {
-                    //
                     sSendData[State] = item;
                     State = 1;
                     state1Process();
                 } else if (State == 1) {
-                    sSendData[State] = item;
+                    Urun urun = hmUrun.get(item);
+                    sSendData[State] = urun.getSTOK_KODU();
                     State = 2;
                     ArrayList<String> keys = new ArrayList<>(hmDepo.keySet());
                     ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
                     listView.setAdapter(arrayAdapter);
                     arrayAdapter.notifyDataSetChanged();
                 } else if (State == 2) {
-                    sSendData[State] = item;
+                    Depo depo = hmDepo.get(item);
+                    sSendData[State] = depo.getDEPO_KODU();
                     State = 0;
                     bilgileriKayitEt();
 

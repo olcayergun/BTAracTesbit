@@ -9,6 +9,14 @@ public class Depo {
     String DEPO_KODU;
     String DEPO_ISMI;
 
+    public String getDEPO_KODU() {
+        return DEPO_KODU;
+    }
+
+    public String getDEPO_ISMI() {
+        return DEPO_ISMI;
+    }
+
     public Depo(JSONObject obj) {
         try {
             DEPO_KODU = obj.getString("DEPO_KODU");

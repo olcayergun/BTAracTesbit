@@ -9,6 +9,14 @@ public class Urun {
     String STOK_KODU;
     String STOK_ADI;
 
+    public String getSTOK_KODU() {
+        return STOK_KODU;
+    }
+
+    public String getSTOK_ADI() {
+        return STOK_ADI;
+    }
+
     public Urun(JSONObject obj) {
         try {
             STOK_KODU = obj.getString("STOK_KODU");
