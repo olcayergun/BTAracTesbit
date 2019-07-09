@@ -19,6 +19,10 @@ public class Kayit {
     private String VARDIYA_SORUMLUSU;
     private String URETIM_BOLUMU;
 
+    private String lokasyon_x;
+    private String lokasyon_y;
+    private String lokasyon_z;
+
     public String getCIKIS_YERI() {
         return CIKIS_YERI;
     }
@@ -118,6 +122,30 @@ public class Kayit {
         isSend = send;
     }
 
+    public String getLokasyon_x() {
+        return lokasyon_x;
+    }
+
+    public void setLokasyon_x(String lokasyon_x) {
+        this.lokasyon_x = lokasyon_x;
+    }
+
+    public String getLokasyon_y() {
+        return lokasyon_y;
+    }
+
+    public void setLokasyon_y(String lokasyon_y) {
+        this.lokasyon_y = lokasyon_y;
+    }
+
+    public String getLokasyon_z() {
+        return lokasyon_z;
+    }
+
+    public void setLokasyon_z(String lokasyon_z) {
+        this.lokasyon_z = lokasyon_z;
+    }
+
     public Kayit(JSONObject obj) {
         try {
             setSelected(obj.getBoolean("isSelected"));
@@ -132,6 +160,9 @@ public class Kayit {
             setURETIM_BOLUMU(obj.getString("URETIM_BOLUMU"));
             setURETIM_SORUMLUSU(obj.getString("URETIM_SORUMLUSU"));
             setMAKINE_ADI(obj.getString("MAKINE_ADI"));
+            setLokasyon_x(obj.getString("lokasyon_x"));
+            setLokasyon_y(obj.getString("lokasyon_y"));
+            setLokasyon_z(obj.getString("lokasyon_z"));
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }
