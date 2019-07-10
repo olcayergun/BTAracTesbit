@@ -268,8 +268,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
-        while (mBluetoothAdapter.isDiscovering()) {
-        }
+        //while (mBluetoothAdapter.isDiscovering()) {
+        //}
     }
 
     //
@@ -301,9 +301,11 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             double longitude = 0;
                             double latitude = 0;
+                            double altitude = 0;
                             if (locationTrack.canGetLocation()) {
                                 longitude = locationTrack.getLongitude();
                                 latitude = locationTrack.getLatitude();
+                                altitude = locationTrack.getAltitude();
                                 Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
                             } else {
                                 locationTrack.showSettingsAlert();
@@ -317,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                             joBilgiler.put("zaman", getCurrentTimestamp());
                             joBilgiler.put("lokasyon_x", Double.toString(longitude));
                             joBilgiler.put("lokasyon_y", Double.toString(latitude));
-                            joBilgiler.put("lokasyon_z", "zzz");
+                            joBilgiler.put("lokasyon_z", Double.toString(altitude));
                             Sabitler sabitler = hmSabitler.get("1");
                             if (sabitler != null) {
                                 joBilgiler.put("CIKIS_YERI", sabitler.getCalistigidepo());
