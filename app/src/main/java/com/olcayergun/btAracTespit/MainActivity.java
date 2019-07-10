@@ -1,6 +1,5 @@
 package com.olcayergun.btAracTespit;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +12,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -33,6 +33,7 @@ import com.olcayergun.btAracTespit.jsonObjects.Plaka;
 import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
 import com.olcayergun.btAracTespit.kayitlar.ListActivity;
+import com.olcayergun.btAracTespit.kayitlar.LocationTrack;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,6 +46,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQ_BT_ENABLE = 1;
@@ -70,11 +74,34 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
 
+    private ArrayList<String> permissionsToRequest;
+    private ArrayList<String> permissionsRejected = new ArrayList();
+    private ArrayList permissions = new ArrayList();
+
+    private final static int ALL_PERMISSIONS_RESULT = 101;
+    LocationTrack locationTrack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        permissions.add(ACCESS_FINE_LOCATION);
+        permissions.add(ACCESS_COARSE_LOCATION);
+
+        permissionsToRequest = findUnAskedPermissions(permissions);
+        //get the permissions we have asked for before but are not granted..
+        //we will store this in a global list to access later.
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (permissionsToRequest.size() > 0) {
+                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+            }
+        }
+
+        locationTrack = new LocationTrack(MainActivity.this);
 
         Intent intent = getIntent();
         sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
@@ -130,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
         /////
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+        ActivityCompat.requestPermissions(this, new String[]{ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         startBTDiscovery();
@@ -182,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        locationTrack.stopListener();
         try {
             unregisterReceiver(btReceiver);
         } catch (Exception e) {
@@ -271,14 +299,24 @@ public class MainActivity extends AppCompatActivity {
                     case DialogInterface.BUTTON_POSITIVE:
                         JSONObject joBilgiler = new JSONObject();
                         try {
+                            double longitude = 0;
+                            double latitude = 0;
+                            if (locationTrack.canGetLocation()) {
+                                longitude = locationTrack.getLongitude();
+                                latitude = locationTrack.getLatitude();
+                                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+                            } else {
+                                locationTrack.showSettingsAlert();
+                            }
+
                             joBilgiler.put("plaka", sSendData[0]);
                             joBilgiler.put("urun", sSendData[1]);
                             joBilgiler.put("depo", sSendData[2]);
                             joBilgiler.put("isSelected", false);
                             joBilgiler.put("isSend", false);
                             joBilgiler.put("zaman", getCurrentTimestamp());
-                            joBilgiler.put("lokasyon_x", "xxx");
-                            joBilgiler.put("lokasyon_y", "yyy");
+                            joBilgiler.put("lokasyon_x", Double.toString(longitude));
+                            joBilgiler.put("lokasyon_y", Double.toString(latitude));
                             joBilgiler.put("lokasyon_z", "zzz");
                             Sabitler sabitler = hmSabitler.get("1");
                             if (sabitler != null) {
@@ -481,4 +519,73 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    ///////////////////////////////
+    private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {
+        ArrayList result = new ArrayList();
+
+        for (String perm : wanted) {
+            if (!hasPermission(perm)) {
+                result.add(perm);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean hasPermission(String permission) {
+        if (canMakeSmores()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return (checkSelfPermission(permission) == android.content.pm.PackageManager.PERMISSION_GRANTED);
+            }
+        }
+        return true;
+    }
+
+    private boolean canMakeSmores() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+
+            case ALL_PERMISSIONS_RESULT:
+                for (String perms : permissionsToRequest) {
+                    if (!hasPermission(perms)) {
+                        permissionsRejected.add(perms);
+                    }
+                }
+
+                if (permissionsRejected.size() > 0) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
+                            showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                            }
+                                        }
+                                    });
+                            return;
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
 }

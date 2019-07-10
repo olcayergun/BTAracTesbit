@@ -72,7 +72,8 @@ public class ListActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
                     Kayit kayit = CustomAdapter.kayitArrayList.get(i);
-                    if (kayit.isSelected() && !kayit.isSend()) {
+                    //if (kayit.isSelected() && !kayit.isSend()) {
+                    if (kayit.isSelected()) {
                         kayit.setSend(true);
                         jsonArray.put(kayit.getJSONObject());
                     }
