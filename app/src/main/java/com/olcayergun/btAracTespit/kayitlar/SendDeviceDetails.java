@@ -34,6 +34,7 @@ public class SendDeviceDetails extends AsyncTask<String, Void, String> {
             // Send the post body
             if (params[0] != null) {
                 OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
+                Log.d(TAG, "Data to be sent :".concat(params[0]));
                 writer.write(params[0]);
                 writer.flush();
             }
