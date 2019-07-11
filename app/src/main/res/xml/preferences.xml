@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="Ana URL:"
+        android:key="mainUrl"
+        android:summary="Bilgilerin alınacağı URL giriniz."></EditTextPreference>
+    <CheckBoxPreference android:title="BlueTooth cihaz adlarını kullanmı?"
+        android:defaultValue="false"
+        android:summary="Bluetooth cihazlarının adlandırılmasında 'MAC Adresi' yerine 'Cihaz Adı' kulanılır."
+        android:key="bBTNameUse" />
+</PreferenceScreen>

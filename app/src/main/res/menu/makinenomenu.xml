@@ -6,4 +6,8 @@
         android:id="@+id/menuSettings"
         android:title="@string/SETTINGS"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuSettings2"
+        android:title="@string/SETTINGS2"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Go back!!!");
         State--;
         if (State < 0) {
-            State = 0;
+            super.onBackPressed();
         } else if (0 == State) {
             startBTDiscovery();
         } else if (1 == State) {

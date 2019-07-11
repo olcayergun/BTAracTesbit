@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,16 +69,12 @@ public class MakineNoActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
                 String[] sa = item.split(" ");
-                goNextActivity(sa[0]);
+                Intent intent = new Intent(MakineNoActivity.this, MainActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, sa[0]);
+                startActivity(intent);
             }
 
         });
-    }
-
-    private void goNextActivity(String sMakineNo) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, sMakineNo);
-        startActivity(intent);
     }
 
     @Override
@@ -93,9 +90,27 @@ public class MakineNoActivity extends AppCompatActivity {
                 Log.d(TAG, "Settings Menu!!!");
                 getURL();
                 return true;
+            case R.id.menuSettings2:
+                Log.d(TAG, "Settings Menu2!!!");
+                Intent i = new Intent(this, MyPreferencesActivity.class);
+                startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume ");
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String sMainURL = SP.getString("mainUrl", "");
+        boolean bBTNameUse = SP.getBoolean("bBTNameUse", false);
+        Log.d(TAG, "The Main URL : ".concat(sMainURL));
+        Log.d(TAG, "BT Name usage : ".concat(Boolean.toString(bBTNameUse)));
+
+        getURLler(sMainURL);
     }
 
     private void getURL() {
