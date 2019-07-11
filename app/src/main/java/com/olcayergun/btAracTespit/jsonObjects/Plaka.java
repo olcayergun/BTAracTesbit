@@ -12,12 +12,14 @@ public class Plaka {
     }
 
     String PLAKA;
-    String BLUETOOTH;
+    String BLUETOOTHMAC;
+    String BLUETOOTHNAME;
 
     public Plaka(JSONObject obj) {
         try {
             PLAKA = obj.getString("PLAKA");
-            BLUETOOTH = obj.getString("BLUETOOTH");
+            BLUETOOTHMAC = obj.getString("BLUETOOTH");
+            BLUETOOTHNAME = obj.getString("ISIM");
         } catch (Exception e) {
             Log.e(TAG, "JsonToObject", e);
         }

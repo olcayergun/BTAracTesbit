@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     private HashMap<String, Urun> hmUrun = new HashMap<>();
     private HashMap<String, Depo> hmDepo = new HashMap<>();
-    private HashMap<String, Plaka> hmPlaka = new HashMap<>();
+    private HashMap<String, Plaka> hmPlakaMac = new HashMap<>();
+    private HashMap<String, Plaka> hmPlakaName = new HashMap<>();
     private HashMap<String, Sabitler> hmSabitler = new HashMap<>();
     private String[] sSendData = new String[3];
 
@@ -80,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
+
+    private static boolean bBTName = false;
+
+    public static void setbBTName(boolean bBTName) {
+        bBTName = bBTName;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -389,11 +396,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case "plakalar.txt":
-                        hmPlaka.clear();
+                        hmPlakaMac.clear();
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
                             Plaka p = new Plaka(jo);
-                            hmPlaka.put((String) jo.get("BLUETOOTH"), p);
+                            hmPlakaMac.put(jo.getString("BLUETOOTH"), p);
+                            hmPlakaName.put(jo.getString("ISIM"), p);
                         }
                         break;
                     case "sabitler.txt":
@@ -502,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
                     String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
                     Log.d(TAG, "Device Address :".concat(sDeviceAddress));
 
-                    Plaka plaka = hmPlaka.get(device.getAddress());
+                    Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
                     String sPlaka = plaka != null ? plaka.getPLAKA() : null;
                     if (null == sPlaka) {
                         sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(")");
