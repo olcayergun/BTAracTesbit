@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
@@ -82,11 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
 
-    private static boolean bBTName = false;
-
-    public static void setbBTName(boolean bBTName) {
-        bBTName = bBTName;
-    }
+    private boolean bBTName = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
         URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
         URLSFILES[0][3] = sharedPref.getString(MakineNoActivity.SABITLER, "");
         SENDFILEURL[0] = sharedPref.getString(MakineNoActivity.KAYIT, "");
+
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        bBTName = SP.getBoolean("bBTNameUse", false);
 
         ///
         listView = findViewById(R.id.listView);

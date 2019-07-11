@@ -111,7 +111,6 @@ public class MakineNoActivity extends AppCompatActivity {
         Log.d(TAG, "BT Name usage : ".concat(Boolean.toString(bBTNameUse)));
 
         getURLler(sMainURL);
-        MainActivity.setbBTName(bBTNameUse);
     }
 
     private void getURL() {
