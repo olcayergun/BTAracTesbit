@@ -268,9 +268,9 @@ public class MainActivity extends AppCompatActivity {
 
     //
     private void state1Process() {
-        if (mBluetoothAdapter.isDiscovering()) {
-            mBluetoothAdapter.cancelDiscovery();
-        }
+        //if (mBluetoothAdapter.isDiscovering()) {
+        //    mBluetoothAdapter.cancelDiscovery();
+        //}
         ArrayList<String> keys = new ArrayList<>(hmUrun.keySet());
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
@@ -511,11 +511,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Device Address :".concat(sDeviceAddress));
 
                     Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
-                    String sPlaka = plaka != null ? plaka.getPLAKA() : null;
-                    if (null == sPlaka) {
-                        sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(")");
+                    String sPlaka;
+                    if (null == plaka) {
+                        sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(":").concat(device.getName()).concat(")");
+                    } else {
+                        sPlaka = plaka.getPLAKA().concat("(").concat(device.getName()).concat(")");
                     }
-
                     String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
                     Log.i(TAG, "A device is discovered : ".concat(s));
                     if (-1 == mDeviceList.indexOf(sPlaka)) {

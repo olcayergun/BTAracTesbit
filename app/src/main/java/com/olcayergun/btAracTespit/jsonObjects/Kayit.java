@@ -183,6 +183,9 @@ public class Kayit {
             jsonObject.put("URETIM_BOLUMU", getURETIM_BOLUMU());
             jsonObject.put("URETIM_SORUMLUSU", getURETIM_SORUMLUSU());
             jsonObject.put("MAKINE_ADI", getMAKINE_ADI());
+            jsonObject.put("lokasyon_x", getLokasyon_x());
+            jsonObject.put("lokasyon_y", getLokasyon_y());
+            jsonObject.put("lokasyon_zx", getLokasyon_z());
         } catch (Exception e) {
             Log.e(TAG, ", e");
         }
