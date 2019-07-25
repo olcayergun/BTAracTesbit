@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         locationTrack = new LocationTrack(MainActivity.this);
+        startService(new Intent(this, LocationTrack.class));
 
         Intent intent = getIntent();
         sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
@@ -132,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (State == 0) {
-                    sSendData[State] = item;
+                    int i = item.indexOf('(');
+                    sSendData[State] = item.substring(0, i);
                     State = 1;
                     state1Process();
                 } else if (State == 1) {
@@ -352,6 +354,11 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
                         }
+                        ArrayList<String> keys = new ArrayList<>();
+                        ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
+                        listView.setAdapter(arrayAdapter);
+                        arrayAdapter.notifyDataSetChanged();
+                        startBTDiscovery();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -505,24 +512,29 @@ public class MainActivity extends AppCompatActivity {
                 //bluetooth device found
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (null != device) {
-                    String sDeviceName = device.getName() == null ? "null" : device.getName();
-                    Log.d(TAG, "Device Name :".concat(sDeviceName));
-                    String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
-                    Log.d(TAG, "Device Address :".concat(sDeviceAddress));
+                    try {
+                        String sDeviceName = device.getName() == null ? "null" : device.getName();
+                        Log.d(TAG, "Device Name :".concat(sDeviceName));
+                        String sDeviceAddress = device.getAddress() == null ? "null" : device.getAddress();
+                        Log.d(TAG, "Device Address :".concat(sDeviceAddress));
 
-                    Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
-                    String sPlaka;
-                    if (null == plaka) {
-                        sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(":").concat(device.getName()).concat(")");
-                    } else {
-                        sPlaka = plaka.getPLAKA().concat("(").concat(device.getName()).concat(")");
-                    }
-                    String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
-                    Log.i(TAG, "A device is discovered : ".concat(s));
-                    if (-1 == mDeviceList.indexOf(sPlaka)) {
-                        mDeviceList.add(sPlaka);
-                        listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
-                        Log.i(TAG, sPlaka + " listeye ekleniyor");
+                        Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
+                        String sPlaka;
+                        if (null == plaka) {
+                            sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(":").concat(device.getName()).concat(")");
+                            return;
+                        } else {
+                            sPlaka = plaka.getPLAKA().concat("(").concat(device.getName()).concat(")");
+                        }
+                        String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
+                        Log.i(TAG, "A device is discovered : ".concat(s));
+                        if (-1 == mDeviceList.indexOf(sPlaka)) {
+                            mDeviceList.add(sPlaka);
+                            listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
+                            Log.i(TAG, sPlaka + " listeye ekleniyor");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "While handling new device...", e);
                     }
                 } else {
                     Log.d(TAG, "Device tanımadı.");

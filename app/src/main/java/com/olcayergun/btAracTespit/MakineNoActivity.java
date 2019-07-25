@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
@@ -44,21 +45,6 @@ public class MakineNoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makine_no);
 
-        try {
-            FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
-            String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
-            putMakineNoIntoList(fileData);
-        } catch (Exception e) {
-            Log.e(TAG, "Getting Makine No from files.", e);
-        }
-        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-        String sURL = sharedPref.getString(MAINURL, "");
-        if (sURL.equals("")) {
-            getURL();
-        } else {
-            getURLler(sURL);
-        }
-
         listView = findViewById(R.id.lvMakineNo);
         String[] mobileArray = {"Makine Noları alınıyor..."};
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
@@ -73,8 +59,30 @@ public class MakineNoActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_MESSAGE, sa[0]);
                 startActivity(intent);
             }
-
         });
+
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String sMainURL = SP.getString("mainUrl", "");
+
+        //SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        //sMainURL= sharedPref.getString(MAINURL, "");
+        if (sMainURL.equals("")) {
+            Toast.makeText(getApplicationContext(),"Ana URL den veriler alınamıyor!!!", Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, MyPreferencesActivity.class);
+            startActivity(i);
+            //getURL();
+        } else {
+            getURLler(sMainURL);
+
+
+        try {
+            FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
+            String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
+            putMakineNoIntoList(fileData);
+        } catch (Exception e) {
+            Log.e(TAG, "Getting Makine No from files.", e);
+        }
+        }
     }
 
     @Override
@@ -87,10 +95,6 @@ public class MakineNoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuSettings:
-                Log.d(TAG, "Settings Menu!!!");
-                getURL();
-                return true;
-            case R.id.menuSettings2:
                 Log.d(TAG, "Settings Menu2!!!");
                 Intent i = new Intent(this, MyPreferencesActivity.class);
                 startActivity(i);
@@ -113,53 +117,16 @@ public class MakineNoActivity extends AppCompatActivity {
         getURLler(sMainURL);
     }
 
-    private void getURL() {
-        try {
-            final AlertDialog dialogBuilder = new AlertDialog.Builder(this).create();
-            LayoutInflater inflater = this.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.custom_dialog, null);
-
-            final EditText editText = dialogView.findViewById(R.id.edt_comment);
-            editText.setText("http://www.olcayergun.com/urller.html");
-            Button BtnSubmit = dialogView.findViewById(R.id.buttonSubmit);
-            Button btnCancel = dialogView.findViewById(R.id.buttonCancel);
-
-
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogBuilder.dismiss();
-                }
-            });
-            BtnSubmit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogBuilder.dismiss();
-                    String sURL = editText.getText().toString();
-                    if (!sURL.equals("")) {
-                        getURLler(sURL);
-                        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString(MAINURL, sURL);
-                        editor.apply();
-                    }
-                }
-            });
-
-            dialogBuilder.setView(dialogView);
-            dialogBuilder.setCanceledOnTouchOutside(false);
-            dialogBuilder.show();
-        } catch (Exception e) {
-            Log.e(TAG, ",e");
-        }
-    }
-
     private void getURLler(String sMainURL) {
         GetJSON asyncTask = new GetJSON();
         asyncTask.setListener(new GetJSON.AsyncTaskListener() {
             @Override
             public void onAsyncTaskFinished(String[] sa) {
                 Log.d(TAG, "getURLler : onAsyncTaskFinished " + sa.length);
+                if (null == sa[0]) {
+                    Log.d(TAG, "sa[0] is null!!!");
+                    Toast.makeText(getApplicationContext(), "Ana URL'den bilgiler alınamadı!!!", Toast.LENGTH_SHORT).show();
+                } else {
                 try {
                     JSONArray jsonArray = new JSONArray(sa[0]);
                     String sMAKINE_NOLARI = ((JSONObject) jsonArray.get(0)).getString("url");
@@ -181,6 +148,7 @@ public class MakineNoActivity extends AppCompatActivity {
                     getMakineNolar();
                 } catch (Exception e) {
                     Log.e(TAG, "", e);
+                }
                 }
             }
         });
