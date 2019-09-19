@@ -18,6 +18,8 @@ public class Kayit {
     private String VARDIYA;
     private String VARDIYA_SORUMLUSU;
     private String URETIM_BOLUMU;
+    private String URETIM_SORUMLUSU;
+    private String MAKINE_ADI;
 
     private String lokasyon_x;
     private String lokasyon_y;
@@ -71,8 +73,6 @@ public class Kayit {
         this.MAKINE_ADI = MAKINE_ADI;
     }
 
-    private String URETIM_SORUMLUSU;
-    private String MAKINE_ADI;
 
     public boolean isSelected() {
         return isSelected;
@@ -185,7 +185,7 @@ public class Kayit {
             jsonObject.put("MAKINE_ADI", getMAKINE_ADI());
             jsonObject.put("lokasyon_x", getLokasyon_x());
             jsonObject.put("lokasyon_y", getLokasyon_y());
-            jsonObject.put("lokasyon_zx", getLokasyon_z());
+            jsonObject.put("lokasyon_z", getLokasyon_z());
         } catch (Exception e) {
             Log.e(TAG, ", e");
         }

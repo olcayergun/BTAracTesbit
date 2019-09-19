@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                                 longitude = locationTrack.getLongitude();
                                 latitude = locationTrack.getLatitude();
                                 altitude = locationTrack.getAltitude();
-                                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude) + "\nAltitude:" + Double.toString(altitude), Toast.LENGTH_SHORT).show();
                             } else {
                                 locationTrack.showSettingsAlert();
                             }
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                                 joBilgiler.put("VARDIYA", sabitler.getVardiyagrubu());
                                 joBilgiler.put("VARDIYA_SORUMLUSU", sabitler.getVardiyasorumlusu());
                                 joBilgiler.put("URETIM_BOLUMU", sabitler.getUretimbolumu());
-                                joBilgiler.put("URETIM_SORUMLUSU", sabitler.getVardiyasorumlusu());
+                                joBilgiler.put("URETIM_SORUMLUSU", sabitler.getUretimsorumlusu());
                                 joBilgiler.put("MAKINE_ADI", sMakineNo);
                             }
                             String fileData;
