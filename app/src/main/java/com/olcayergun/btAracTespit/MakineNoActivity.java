@@ -1,19 +1,15 @@
 package com.olcayergun.btAracTespit;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -37,7 +33,7 @@ public class MakineNoActivity extends AppCompatActivity {
     public static final String DEPO = "DEPO";
     public static final String URUN = "URUN";
     public static final String KAYIT = "KAYIT";
-    ListView listView;
+    ListView listView, listViewOld;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +42,7 @@ public class MakineNoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_makine_no);
 
         listView = findViewById(R.id.lvMakineNo);
+        listViewOld = findViewById(R.id.lvOldMakineNo);
         String[] mobileArray = {"Makine Noları alınıyor..."};
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
         listView.setAdapter(adapter);
@@ -67,7 +64,7 @@ public class MakineNoActivity extends AppCompatActivity {
         //SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         //sMainURL= sharedPref.getString(MAINURL, "");
         if (sMainURL.equals("")) {
-            Toast.makeText(getApplicationContext(),"Ana URL den veriler alınamıyor!!!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Ana URL den veriler alınamıyor!!!", Toast.LENGTH_LONG).show();
             Intent i = new Intent(this, MyPreferencesActivity.class);
             startActivity(i);
             //getURL();
@@ -75,13 +72,13 @@ public class MakineNoActivity extends AppCompatActivity {
             getURLler(sMainURL);
 
 
-        try {
-            FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
-            String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
-            putMakineNoIntoList(fileData);
-        } catch (Exception e) {
-            Log.e(TAG, "Getting Makine No from files.", e);
-        }
+            try {
+                FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
+                String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
+                putMakineNoIntoList(fileData);
+            } catch (Exception e) {
+                Log.e(TAG, "Getting Makine No from files.", e);
+            }
         }
     }
 
@@ -127,28 +124,28 @@ public class MakineNoActivity extends AppCompatActivity {
                     Log.d(TAG, "sa[0] is null!!!");
                     Toast.makeText(getApplicationContext(), "Ana URL'den bilgiler alınamadı!!!", Toast.LENGTH_SHORT).show();
                 } else {
-                try {
-                    JSONArray jsonArray = new JSONArray(sa[0]);
-                    String sMAKINE_NOLARI = ((JSONObject) jsonArray.get(0)).getString("url");
-                    String sSABITLER = ((JSONObject) jsonArray.get(1)).getString("url");
-                    String sPLAKALR = ((JSONObject) jsonArray.get(2)).getString("url");
-                    String sDEPO = ((JSONObject) jsonArray.get(3)).getString("url");
-                    String sURUN = ((JSONObject) jsonArray.get(4)).getString("url");
-                    String sKAYIT = ((JSONObject) jsonArray.get(5)).getString("url");
+                    try {
+                        JSONArray jsonArray = new JSONArray(sa[0]);
+                        String sMAKINE_NOLARI = ((JSONObject) jsonArray.get(0)).getString("url");
+                        String sSABITLER = ((JSONObject) jsonArray.get(1)).getString("url");
+                        String sPLAKALR = ((JSONObject) jsonArray.get(2)).getString("url");
+                        String sDEPO = ((JSONObject) jsonArray.get(3)).getString("url");
+                        String sURUN = ((JSONObject) jsonArray.get(4)).getString("url");
+                        String sKAYIT = ((JSONObject) jsonArray.get(5)).getString("url");
 
-                    SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString(MAKINE_NOLARI, sMAKINE_NOLARI);
-                    editor.putString(SABITLER, sSABITLER);
-                    editor.putString(PLAKALR, sPLAKALR);
-                    editor.putString(DEPO, sDEPO);
-                    editor.putString(URUN, sURUN);
-                    editor.putString(KAYIT, sKAYIT);
-                    editor.apply();
-                    getMakineNolar();
-                } catch (Exception e) {
-                    Log.e(TAG, "", e);
-                }
+                        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(MAKINE_NOLARI, sMAKINE_NOLARI);
+                        editor.putString(SABITLER, sSABITLER);
+                        editor.putString(PLAKALR, sPLAKALR);
+                        editor.putString(DEPO, sDEPO);
+                        editor.putString(URUN, sURUN);
+                        editor.putString(KAYIT, sKAYIT);
+                        editor.apply();
+                        getMakineNolar();
+                    } catch (Exception e) {
+                        Log.e(TAG, "", e);
+                    }
                 }
             }
         });
@@ -188,5 +185,13 @@ public class MakineNoActivity extends AppCompatActivity {
             String[] mobileArray = {"Makine Noları alınamadı..."};
             listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
         }
+
+        String[] sOldMakineNos = new String[5];
+        sOldMakineNos[0] = "Eski Makine 0";
+        sOldMakineNos[1] = "Eski Makine 1";
+        sOldMakineNos[2] = "Eski Makine 2";
+        sOldMakineNos[3] = "Eski Makine 3";
+        sOldMakineNos[4] = "Eski Makine 4";
+        listViewOld.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
     }
 }
