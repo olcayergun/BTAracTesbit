@@ -33,7 +33,7 @@ public class MakineNoActivity extends AppCompatActivity {
     public static final String DEPO = "DEPO";
     public static final String URUN = "URUN";
     public static final String KAYIT = "KAYIT";
-    ListView listView, listViewOld;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,6 @@ public class MakineNoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_makine_no);
 
         listView = findViewById(R.id.lvMakineNo);
-        listViewOld = findViewById(R.id.lvOldMakineNo);
         String[] mobileArray = {"Makine Noları alınıyor..."};
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
         listView.setAdapter(adapter);
@@ -70,7 +69,6 @@ public class MakineNoActivity extends AppCompatActivity {
             //getURL();
         } else {
             getURLler(sMainURL);
-
 
             try {
                 FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
@@ -185,13 +183,5 @@ public class MakineNoActivity extends AppCompatActivity {
             String[] mobileArray = {"Makine Noları alınamadı..."};
             listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
         }
-
-        String[] sOldMakineNos = new String[5];
-        sOldMakineNos[0] = "Eski Makine 0";
-        sOldMakineNos[1] = "Eski Makine 1";
-        sOldMakineNos[2] = "Eski Makine 2";
-        sOldMakineNos[3] = "Eski Makine 3";
-        sOldMakineNos[4] = "Eski Makine 4";
-        listViewOld.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
     }
 }

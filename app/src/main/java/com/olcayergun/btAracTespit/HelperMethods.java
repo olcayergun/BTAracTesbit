@@ -1,6 +1,7 @@
 package com.olcayergun.btAracTespit;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -9,6 +10,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.olcayergun.btAracTespit.MakineNoActivity.PREFERENCE_FILE_KEY;
 
 public class HelperMethods {
     private static String TAG = "Adaer";
@@ -57,4 +63,13 @@ public class HelperMethods {
         return retBuf.toString();
     }
 
+    public static <T, C extends Collection<T>> void addWithLimit(C c, T itemToAdd, int limit) {
+        List<T> list = new ArrayList<>(c);
+        list.add(itemToAdd);
+        while (list.size() > limit) {
+            list.remove(0);
+        }
+        c.clear();
+        c.addAll(list);
+    }
 }

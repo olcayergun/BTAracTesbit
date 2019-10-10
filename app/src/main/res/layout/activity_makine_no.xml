@@ -5,33 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     tools:context=".MainActivity">
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
-
         <ListView
             android:id="@+id/lvMakineNo"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ListView
-            android:id="@+id/lvOldMakineNo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-
-    </LinearLayout>
 
 </LinearLayout>

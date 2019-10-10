@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,9 +48,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.olcayergun.btAracTespit.MakineNoActivity.PREFERENCE_FILE_KEY;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQ_BT_ENABLE = 1;
@@ -71,19 +75,23 @@ public class MainActivity extends AppCompatActivity {
     public static String[] SENDFILEURL = {"", "bilgi.txt"};
     private String sMakineNo;
 
-    private ListView listView;
+    private ListView listView, listViewOld;
     private ArrayList<String> mDeviceList = new ArrayList<>();
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
+    LinearLayout linearLayout;
 
     private ArrayList<String> permissionsToRequest;
-    private ArrayList<String> permissionsRejected = new ArrayList();
+    private ArrayList<String> permissionsRejected = new ArrayList<String>();
     private ArrayList permissions = new ArrayList();
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
 
     private boolean bBTName = false;
+
+    private String OLDMAKINES_KEY = "oldmakines";
+    private Integer OldMakineLimit = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         sMakineNo = intent.getStringExtra(MakineNoActivity.EXTRA_MESSAGE);
 
-        SharedPreferences sharedPref = getSharedPreferences(MakineNoActivity.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         URLSFILES[0][0] = sharedPref.getString(MakineNoActivity.URUN, "");
         URLSFILES[0][1] = sharedPref.getString(MakineNoActivity.DEPO, "");
         URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
@@ -122,6 +130,38 @@ public class MainActivity extends AppCompatActivity {
         bBTName = SP.getBoolean("bBTNameUse", false);
 
         ///
+        linearLayout = findViewById(R.id.OldLL);
+
+        listViewOld = findViewById(R.id.lvOldlistView);
+        String[] sOldMakineNos = null;
+        SharedPreferences prefs = getSharedPreferences(PREFERENCE_FILE_KEY, 0);
+        Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
+        if (set != null) {
+            Object[] arr = set.toArray();
+            int iLength = arr.length < OldMakineLimit + 1 ? arr.length : OldMakineLimit;
+            sOldMakineNos = new String[iLength];
+            for (int i = 0; i < iLength; i++) {
+                sOldMakineNos[i] = (String) arr[i];
+            }
+            listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
+        }
+
+        listViewOld.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = ((TextView) view).getText().toString();
+                Log.i(TAG, "A click on : ".concat(item).concat(" State:").concat(Integer.toString(State)));
+
+                if (State == 0) {
+                    int i = item.indexOf('(');
+                    sSendData[State] = item.substring(0, i);
+                    State = 1;
+                    state1Process();
+                }
+            }
+        });
+
+
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -139,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     state1Process();
                 } else if (State == 1) {
                     Urun urun = hmUrun.get(item);
-                    sSendData[State] = urun.getSTOK_KODU();
+                    sSendData[State] = urun != null ? urun.getSTOK_KODU() : null;
                     State = 2;
                     ArrayList<String> keys = new ArrayList<>(hmDepo.keySet());
                     ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
@@ -147,10 +187,8 @@ public class MainActivity extends AppCompatActivity {
                     arrayAdapter.notifyDataSetChanged();
                 } else if (State == 2) {
                     Depo depo = hmDepo.get(item);
-                    sSendData[State] = depo.getDEPO_KODU();
-                    State = 0;
+                    sSendData[State] = depo != null ? depo.getDEPO_KODU() : null;
                     bilgileriKayitEt();
-
                     if (null != mBluetoothAdapter && !mBluetoothAdapter.isDiscovering()) {
                         mBluetoothAdapter.startDiscovery();
                     }
@@ -277,6 +315,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
+        listViewOld.setVisibility(View.GONE);
+        linearLayout.setVisibility(View.GONE);
         //while (mBluetoothAdapter.isDiscovering()) {
         //}
     }
@@ -359,6 +399,9 @@ public class MainActivity extends AppCompatActivity {
                         listView.setAdapter(arrayAdapter);
                         arrayAdapter.notifyDataSetChanged();
                         startBTDiscovery();
+                        listViewOld.setVisibility(View.VISIBLE);
+                        linearLayout.setVisibility(View.VISIBLE);
+                        State = 0;
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -437,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAsyncTaskFinished(String[] sa) {
                 Log.d(TAG, "onAsyncTaskFinished " + sa.length);
 
-                if (sa == null) {
+                if (null == sa) {
                     Log.e(TAG, "Bilgiler alınamadı.");
                     tvNTDurum.setText(R.string.BILGILER_ALINAMADI);
                 } else {
@@ -485,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
         return dateFormat.format(date);
     }
 
-    //Boardcaat Reciev"er
+    //Boardcaat Recivier
     //BT
     private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -532,6 +575,21 @@ public class MainActivity extends AppCompatActivity {
                             mDeviceList.add(sPlaka);
                             listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
                             Log.i(TAG, sPlaka + " listeye ekleniyor");
+
+                            // Adding old plakas into SharedPreferences
+                            SharedPreferences prefs = context.getSharedPreferences(PREFERENCE_FILE_KEY, 0);
+                            Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
+                            if (set == null) {
+                                set = new HashSet<String>(OldMakineLimit);
+                                HelperMethods.addWithLimit(set, sPlaka, OldMakineLimit);
+                            } else {
+                                if (!set.contains(sPlaka)) {
+                                    HelperMethods.addWithLimit(set, sPlaka, OldMakineLimit);
+                                }
+                            }
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putStringSet(OLDMAKINES_KEY, set);
+                            editor.apply();
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "While handling new device...", e);
@@ -571,9 +629,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
         switch (requestCode) {
-
             case ALL_PERMISSIONS_RESULT:
                 for (String perms : permissionsToRequest) {
                     if (!hasPermission(perms)) {
@@ -582,8 +638,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (permissionsRejected.size() > 0) {
-
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
                             showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
