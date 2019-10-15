@@ -29,13 +29,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:gravity="left"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="KAYITLI ARAÇLAR" />
 
             <ListView
-                android:id="@+id/listView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:id="@+id/lvOldlistView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -43,11 +50,18 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:gravity="left"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="BULUNAN ARAÇLAR" />
 
             <ListView
-                android:id="@+id/lvOldlistView"
+                android:id="@+id/listView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
