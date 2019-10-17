@@ -19,13 +19,14 @@
         android:text="@string/tv2" />
 
     <LinearLayout
-        android:id="@+id/llMain"
+        android:id="@+id/OldLL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         tools:context=".MainActivity">
 
         <LinearLayout
+            android:id="@+id/llKayitli"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -46,7 +47,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/OldLL"
+            android:id="@+id/llMain"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

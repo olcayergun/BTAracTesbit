@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mDeviceList = new ArrayList<>();
     private TextView tvNTDurum;
     private TextView tvBTDurumu;
-    LinearLayout linearLayout;
+    LinearLayout linearLayoutOld;
 
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<String>();
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         bBTName = SP.getBoolean("bBTNameUse", false);
 
         ///
-        linearLayout = findViewById(R.id.OldLL);
+        linearLayoutOld = findViewById(R.id.llKayitli);
 
         listViewOld = findViewById(R.id.lvOldlistView);
         String[] sOldMakineNos = null;
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
         listViewOld.setVisibility(View.GONE);
-        linearLayout.setVisibility(View.GONE);
+        linearLayoutOld.setVisibility(View.GONE);
         //while (mBluetoothAdapter.isDiscovering()) {
         //}
     }
@@ -400,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
                         arrayAdapter.notifyDataSetChanged();
                         startBTDiscovery();
                         listViewOld.setVisibility(View.VISIBLE);
-                        linearLayout.setVisibility(View.VISIBLE);
+                        linearLayoutOld.setVisibility(View.VISIBLE);
                         State = 0;
                         break;
 
