@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "A click on : ".concat(item).concat(" State:").concat(Integer.toString(State)));
 
                 if (State == 0) {
-                    int i = item.indexOf('(');
+                    int i = item.indexOf('_');
                     sSendData[State] = item.substring(0, i);
                     State = 1;
                     state1Process();
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (State == 0) {
-                    int i = item.indexOf('(');
+                    int i = item.indexOf('_');
                     sSendData[State] = item.substring(0, i);
                     State = 1;
                     state1Process();
@@ -564,13 +564,12 @@ public class MainActivity extends AppCompatActivity {
                         Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
                         String sPlaka;
                         if (null == plaka) {
-                            sPlaka = BULUNAMADI.concat("(").concat(device.getAddress()).concat(":").concat(device.getName()).concat(")");
+                            sPlaka = BULUNAMADI.concat("_").concat(device.getAddress()).concat(":").concat(device.getName());
                             return;
                         } else {
-                            sPlaka = plaka.getPLAKA().concat("(").concat(device.getName()).concat(")");
+                            sPlaka = plaka.getPLAKA().concat("_").concat(device.getName());
                         }
-                        String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
-                        Log.i(TAG, "A device is discovered : ".concat(s));
+
                         if (-1 == mDeviceList.indexOf(sPlaka)) {
                             mDeviceList.add(sPlaka);
                             listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
@@ -591,6 +590,8 @@ public class MainActivity extends AppCompatActivity {
                             editor.putStringSet(OLDMAKINES_KEY, set);
                             editor.apply();
                         }
+                        String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
+                        Log.i(TAG, "A device is discovered : ".concat(s));
                     } catch (Exception e) {
                         Log.e(TAG, "While handling new device...", e);
                     }
