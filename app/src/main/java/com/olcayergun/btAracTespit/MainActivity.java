@@ -300,6 +300,13 @@ public class MainActivity extends AppCompatActivity {
         if (State < 0) {
             super.onBackPressed();
         } else if (0 == State) {
+            ArrayList<String> keys = new ArrayList<>();
+            ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
+            listView.setAdapter(arrayAdapter);
+            arrayAdapter.notifyDataSetChanged();
+
+            listViewOld.setVisibility(View.VISIBLE);
+            linearLayoutOld.setVisibility(View.VISIBLE);
             startBTDiscovery();
         } else if (1 == State) {
             state1Process();
@@ -394,14 +401,18 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
                         }
+
                         ArrayList<String> keys = new ArrayList<>();
                         ArrayAdapter<String> arrayAdapter = fixItemColor(keys);
                         listView.setAdapter(arrayAdapter);
                         arrayAdapter.notifyDataSetChanged();
-                        startBTDiscovery();
+
                         listViewOld.setVisibility(View.VISIBLE);
                         linearLayoutOld.setVisibility(View.VISIBLE);
+
                         State = 0;
+
+                        startBTDiscovery();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
