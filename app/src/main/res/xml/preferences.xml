@@ -5,8 +5,12 @@
         android:key="mainUrl"
         android:defaultValue="http://www.olcayergun.com/urller.html"
         android:summary="Bilgilerin alınacağı URL giriniz." />
-    <CheckBoxPreference android:title="BlueTooth cihaz adları da kullanılsın mı??"
+    <CheckBoxPreference android:title="BlueTooth cihaz adları da kullanılsın mı?"
         android:defaultValue="false"
         android:summary="Bluetooth cihazlarının adlandırılmasında 'MAC Adresi' beraber \n'Cihaz Adı' de kulanılır."
         android:key="bBTNameUse" />
+    <CheckBoxPreference android:title="Kayıtlı veriler bağlantı olduğu an gönderilesin mi?"
+        android:defaultValue="true"
+        android:summary="Uygulamadaki kayıtlar bağlantı sağlandığında sunucuya gönderilmeye başlanır."
+        android:key="sendDataOnConn" />
 </PreferenceScreen>

@@ -4,6 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.olcayergun.btAracTespit.jsonObjects.Kayit;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,5 +76,45 @@ public class HelperMethods {
         }
         c.clear();
         c.addAll(list);
+    }
+
+    public static ArrayList<Kayit> getKayitlar(int iSelected, FileInputStream fileInputStream) {
+        ArrayList<Kayit> list = new ArrayList<>();
+        StringBuilder retBuf = new StringBuilder();
+        try {
+            if (fileInputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                String lineData = bufferedReader.readLine();
+                while (lineData != null) {
+                    retBuf.append(lineData);
+                    lineData = bufferedReader.readLine();
+                }
+                if (retBuf.length() > 0) {
+                    JSONArray jsonArray = new JSONArray(retBuf.toString());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Kayit kayit = new Kayit(jsonObject);
+                        switch (iSelected) {
+                            case 0:
+                                kayit.setSelected(false);
+                                break;
+                            case 1:
+                                kayit.setSelected(true);
+                                break;
+                            case 2:
+                                kayit.setSelected(kayit.isSend());
+                                break;
+                        }
+                        list.add(kayit);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, ex.getMessage(), ex);
+        }
+        return list;
+
     }
 }

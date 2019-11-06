@@ -26,7 +26,6 @@ public class MakineNoActivity extends AppCompatActivity {
     private String FILE_MAKINENO = "file_makineno";
     public static final String EXTRA_MESSAGE = "com.olcayergun.btAracTespit.extra.MAKINE_NO";
     public static final String PREFERENCE_FILE_KEY = "PREFERENCESFILE";
-    public static final String MAINURL = "MAIN_URL";
     public static final String MAKINE_NOLARI = "MAKINE_NOLARI";
     public static final String SABITLER = "SABITLER";
     public static final String PLAKALR = "PLAKALR";

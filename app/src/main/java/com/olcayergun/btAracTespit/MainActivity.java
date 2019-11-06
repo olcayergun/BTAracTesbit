@@ -48,8 +48,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -92,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
     private String OLDMAKINES_KEY = "oldmakines";
     private Integer OldMakineLimit = 10;
+
+    private boolean isConnected = false;
+    NetworkChangeReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +208,10 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(btReceiver, BTfilter);
         Log.d(TAG, "Registered BT");
 
+        IntentFilter Nfilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkChangeReceiver();
+        registerReceiver(receiver, Nfilter);
+
         dosyadanBilgileriAl();
     }
 
@@ -250,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         locationTrack.stopListener();
         try {
             unregisterReceiver(btReceiver);
+            unregisterReceiver(receiver);
         } catch (Exception e) {
             Log.e(TAG, "", e);
         }
@@ -353,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
                                 longitude = locationTrack.getLongitude();
                                 latitude = locationTrack.getLatitude();
                                 altitude = locationTrack.getAltitude();
-                                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude) + "\nAltitude:" + Double.toString(altitude), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Longitude:" + longitude + "\nLatitude:" + Double.toString(latitude) + "\nAltitude:" + Double.toString(altitude), Toast.LENGTH_SHORT).show();
                             } else {
                                 locationTrack.showSettingsAlert();
                             }
@@ -528,9 +534,9 @@ public class MainActivity extends AppCompatActivity {
         for (Plaka plaka : hmPlakaMac.values()) {
             sOldMakineNos[i++] = plaka.getPLAKA();
         }
+        Arrays.sort(sOldMakineNos);
+
         listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
-
-
     }
 
     private ArrayAdapter<String> fixItemColor(ArrayList arrayList) {
@@ -634,6 +640,41 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public class NetworkChangeReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            Log.v(TAG, "Receieved notification about network status");
+            isNetworkAvailable(context);
+        }
+
+        private boolean isNetworkAvailable(Context context) {
+            ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivity != null) {
+                NetworkInfo[] info = connectivity.getAllNetworkInfo();
+                if (info != null) {
+                    for (int i = 0; i < info.length; i++) {
+                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                            if (!isConnected) {
+                                Log.v(TAG, "Now you are connected to Internet!");
+                                isConnected = true;
+                                SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                                 boolean bSendData = SP.getBoolean("sendDataOnConn", false);
+                                 if (bSendData) {
+
+                                 }
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            Log.v(TAG, "You are not connected to Internet!");
+            isConnected = false;
+            return false;
+        }
+    }
 
     ///////////////////////////////
     private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {
