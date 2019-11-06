@@ -133,19 +133,6 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutOld = findViewById(R.id.llKayitli);
 
         listViewOld = findViewById(R.id.lvOldlistView);
-        String[] sOldMakineNos = null;
-        SharedPreferences prefs = getSharedPreferences(PREFERENCE_FILE_KEY, 0);
-        Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
-        if (set != null) {
-            Object[] arr = set.toArray();
-            int iLength = arr.length < OldMakineLimit + 1 ? arr.length : OldMakineLimit;
-            sOldMakineNos = new String[iLength];
-            for (int i = 0; i < iLength; i++) {
-                sOldMakineNos[i] = (String) arr[i];
-            }
-            listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
-        }
-
         listViewOld.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -511,6 +498,35 @@ public class MainActivity extends AppCompatActivity {
         for (String sDosya : saDosyalar) {
             localdosyaoku(sDosya);
         }
+
+        //Update Old Machines to List
+        String[] sOldMakineNos = null;
+
+        /////Get Old Machines from SharedPreferences
+        /*
+        SharedPreferences prefs = getSharedPreferences(PREFERENCE_FILE_KEY, 0);
+        Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
+        if (set != null) {
+            Object[] arr = set.toArray();
+            int iLength = arr.length < OldMakineLimit + 1 ? arr.length : OldMakineLimit;
+            sOldMakineNos = new String[iLength];
+            for (int i = 0; i < iLength; i++) {
+                sOldMakineNos[i] = (String) arr[i];
+            }
+            listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
+        }
+        */
+
+
+        /////Get Old Machhines from URL
+        sOldMakineNos = new String[hmPlakaMac.size()];
+        int i = 0;
+        for (Plaka plaka : hmPlakaMac.values()) {
+            sOldMakineNos[i++] = plaka.getPLAKA();
+        }
+        listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
+
+
     }
 
     private ArrayAdapter<String> fixItemColor(ArrayList arrayList) {
@@ -587,10 +603,11 @@ public class MainActivity extends AppCompatActivity {
                             Log.i(TAG, sPlaka + " listeye ekleniyor");
 
                             // Adding old plakas into SharedPreferences
+                            /*
                             SharedPreferences prefs = context.getSharedPreferences(PREFERENCE_FILE_KEY, 0);
                             Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
                             if (set == null) {
-                                set = new HashSet<String>(OldMakineLimit);
+                                set = new HashSet<>(OldMakineLimit);
                                 HelperMethods.addWithLimit(set, sPlaka, OldMakineLimit);
                             } else {
                                 if (!set.contains(sPlaka)) {
@@ -600,6 +617,7 @@ public class MainActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putStringSet(OLDMAKINES_KEY, set);
                             editor.apply();
+                            */
                         }
                         String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
                         Log.i(TAG, "A device is discovered : ".concat(s));
