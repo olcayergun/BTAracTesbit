@@ -141,7 +141,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (State == 0) {
                     int i = item.indexOf('_');
-                    sSendData[State] = item.substring(0, i);
+                    if (-1 != i) {
+                        sSendData[State] = item.substring(0, i);
+                    } else {
+                        sSendData[State] = item;
+                    }
                     State = 1;
                     state1Process();
                 }
