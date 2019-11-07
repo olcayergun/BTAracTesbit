@@ -31,11 +31,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
+import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
 import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
+import com.olcayergun.btAracTespit.kayitlar.CustomAdapter;
 import com.olcayergun.btAracTespit.kayitlar.ListActivity;
 import com.olcayergun.btAracTespit.kayitlar.LocationTrack;
+import com.olcayergun.btAracTespit.kayitlar.SendDeviceDetails;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,9 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String OLDMAKINES_KEY = "oldmakines";
     private Integer OldMakineLimit = 10;
-
-    private boolean isConnected = false;
-    NetworkChangeReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,10 +208,6 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(btReceiver, BTfilter);
         Log.d(TAG, "Registered BT");
 
-        IntentFilter Nfilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkChangeReceiver();
-        registerReceiver(receiver, Nfilter);
-
         dosyadanBilgileriAl();
     }
 
@@ -255,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
         locationTrack.stopListener();
         try {
             unregisterReceiver(btReceiver);
-            unregisterReceiver(receiver);
         } catch (Exception e) {
             Log.e(TAG, "", e);
         }
@@ -350,6 +345,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
+                        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        boolean bSendDate = SP.getBoolean("sendDataOnConn", false);
+                        //
                         JSONObject joBilgiler = new JSONObject();
                         try {
                             double longitude = 0;
@@ -359,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                                 longitude = locationTrack.getLongitude();
                                 latitude = locationTrack.getLatitude();
                                 altitude = locationTrack.getAltitude();
-                                Toast.makeText(getApplicationContext(), "Longitude:" + longitude + "\nLatitude:" + Double.toString(latitude) + "\nAltitude:" + Double.toString(altitude), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Longitude:" + longitude + "\nLatitude:" + latitude + "\nAltitude:" + altitude, Toast.LENGTH_SHORT).show();
                             } else {
                                 locationTrack.showSettingsAlert();
                             }
@@ -367,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                             joBilgiler.put("plaka", sSendData[0]);
                             joBilgiler.put("urun", sSendData[1]);
                             joBilgiler.put("depo", sSendData[2]);
-                            joBilgiler.put("isSelected", false);
+                            joBilgiler.put("isSelected", bSendDate);
                             joBilgiler.put("isSend", false);
                             joBilgiler.put("zaman", getCurrentTimestamp());
                             joBilgiler.put("lokasyon_x", Double.toString(longitude));
@@ -395,6 +393,38 @@ public class MainActivity extends AppCompatActivity {
                             jsonArray.put(joBilgiler);
                             HelperMethods.localdosyasil(getApplicationContext(), SENDFILEURL[1]);
                             HelperMethods.localdosyaurunyaz(getApplicationContext(), SENDFILEURL[1], jsonArray.toString());
+
+                            //Send otomatic Sen
+                            if (bSendDate) {
+                                SendDeviceDetails sendDeviceDetails = new SendDeviceDetails();
+                                sendDeviceDetails.setListener(new SendDeviceDetails.AsyncTaskListener() {
+                                    @Override
+                                    public void onAsyncTaskFinished(String s) {
+                                        Log.d(TAG, "onAsyncTaskFinished " + s);
+                                        try {
+                                            ArrayList<Kayit> kayitArrayList = HelperMethods.getKayitlar(2, getApplicationContext().openFileInput(SENDFILEURL[1]));
+                                            CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), kayitArrayList);
+
+                                            JSONArray jsonArray = new JSONArray();
+                                            for (int i = 0; i < CustomAdapter.kayitArrayList.size(); i++) {
+                                                Kayit kayit = CustomAdapter.kayitArrayList.get(i);
+                                                if (kayit.isSelected()) {
+                                                    kayit.setSend(true);
+                                                }
+                                                jsonArray.put(kayit.getJSONObject());
+                                            }
+                                            HelperMethods.localdosyasil(getApplicationContext(), MainActivity.SENDFILEURL[1]);
+                                            HelperMethods.localdosyaurunyaz(getApplicationContext(), MainActivity.SENDFILEURL[1], jsonArray.toString());
+                                            customAdapter.notifyDataSetChanged();
+                                            Toast.makeText(getApplicationContext(), "Kayıtlar gönderildi ve kayıt güncellendi.", Toast.LENGTH_LONG).show();
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "", e);
+                                        }
+                                    }
+
+                                });
+                                sendDeviceDetails.execute(jsonArray.toString());
+                            }
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
                         }
@@ -640,41 +670,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-    public class NetworkChangeReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            Log.v(TAG, "Receieved notification about network status");
-            isNetworkAvailable(context);
-        }
-
-        private boolean isNetworkAvailable(Context context) {
-            ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connectivity != null) {
-                NetworkInfo[] info = connectivity.getAllNetworkInfo();
-                if (info != null) {
-                    for (int i = 0; i < info.length; i++) {
-                        if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                            if (!isConnected) {
-                                Log.v(TAG, "Now you are connected to Internet!");
-                                isConnected = true;
-                                SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                                 boolean bSendData = SP.getBoolean("sendDataOnConn", false);
-                                 if (bSendData) {
-
-                                 }
-                            }
-                            return true;
-                        }
-                    }
-                }
-            }
-            Log.v(TAG, "You are not connected to Internet!");
-            isConnected = false;
-            return false;
-        }
-    }
 
     ///////////////////////////////
     private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {

@@ -115,6 +115,5 @@ public class HelperMethods {
             Log.e(TAG, ex.getMessage(), ex);
         }
         return list;
-
     }
 }
