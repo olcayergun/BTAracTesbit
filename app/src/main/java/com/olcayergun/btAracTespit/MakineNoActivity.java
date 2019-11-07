@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.util.Arrays;
 
 public class MakineNoActivity extends AppCompatActivity {
     private static String TAG = "Adaer";
@@ -176,6 +177,7 @@ public class MakineNoActivity extends AppCompatActivity {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 items[i] = jsonObject.getString("makineno").concat(" ").concat(jsonObject.getString("makineisci"));
             }
+            Arrays.sort(items);
             listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
         } catch (Exception e) {
             Log.e(TAG, "", e);
