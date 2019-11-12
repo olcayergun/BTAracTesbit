@@ -32,6 +32,7 @@ import androidx.preference.PreferenceManager;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
+import com.olcayergun.btAracTespit.jsonObjects.KayitliMakine;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
 import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
@@ -70,9 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, Plaka> hmPlakaMac = new HashMap<>();
     private HashMap<String, Plaka> hmPlakaName = new HashMap<>();
     private HashMap<String, Sabitler> hmSabitler = new HashMap<>();
+    private HashMap<String, KayitliMakine> hmKayitliMakineler = new HashMap<>();
     private String[] sSendData = new String[3];
 
-    private static String[][] URLSFILES = {{"", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt"}};
+    private static String[][] URLSFILES = {{"", "", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt", "kayitlimakineler.txt"}};
     public static String[] SENDFILEURL = {"", "bilgi.txt"};
     private String sMakineNo;
 
@@ -84,15 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<String>();
-    private ArrayList permissions = new ArrayList();
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
 
     private boolean bBTName = false;
-
-    private String OLDMAKINES_KEY = "oldmakines";
-    private Integer OldMakineLimit = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +98,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ArrayList permissions = new ArrayList<>();
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
 
         permissionsToRequest = findUnAskedPermissions(permissions);
         //get the permissions we have asked for before but are not granted..
         //we will store this in a global list to access later.
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (permissionsToRequest.size() > 0) {
@@ -125,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         URLSFILES[0][1] = sharedPref.getString(MakineNoActivity.DEPO, "");
         URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
         URLSFILES[0][3] = sharedPref.getString(MakineNoActivity.SABITLER, "");
+        URLSFILES[0][4] = sharedPref.getString(MakineNoActivity.KAYITLI_MAKINERLER, "");
         SENDFILEURL[0] = sharedPref.getString(MakineNoActivity.KAYIT, "");
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -500,6 +499,14 @@ public class MainActivity extends AppCompatActivity {
                             hmSabitler.put("1", s);
                         }
                         break;
+                    case "kayitlimakineler.txt":
+                        hmKayitliMakineler.clear();
+                        for (int i = 0; i < jsonObj.length(); i++) {
+                            JSONObject jo = jsonObj.getJSONObject(i);
+                            KayitliMakine km = new KayitliMakine(jo);
+                            hmKayitliMakineler.put(jo.getString("makineno"), km);
+                        }
+                        break;
                 }
             }
             tvNTDurum.setText(R.string.YEREL_BİLGİLER_ALINDI);
@@ -542,31 +549,15 @@ public class MainActivity extends AppCompatActivity {
         //Update Old Machines to List
         String[] sOldMakineNos = null;
 
-        /////Get Old Machines from SharedPreferences
-        /*
-        SharedPreferences prefs = getSharedPreferences(PREFERENCE_FILE_KEY, 0);
-        Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
-        if (set != null) {
-            Object[] arr = set.toArray();
-            int iLength = arr.length < OldMakineLimit + 1 ? arr.length : OldMakineLimit;
-            sOldMakineNos = new String[iLength];
-            for (int i = 0; i < iLength; i++) {
-                sOldMakineNos[i] = (String) arr[i];
-            }
-            listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
-        }
-        */
-
-
         /////Get Old Machhines from URL
-        sOldMakineNos = new String[hmPlakaMac.size()];
+        sOldMakineNos = new String[hmKayitliMakineler.size()];
         int i = 0;
-        for (Plaka plaka : hmPlakaMac.values()) {
-            sOldMakineNos[i++] = plaka.getPLAKA();
+        for (KayitliMakine kayitliMakine : hmKayitliMakineler.values()) {
+            sOldMakineNos[i++] = kayitliMakine.getMAKINE_NO();
         }
         Arrays.sort(sOldMakineNos);
 
-        listViewOld.setAdapter(new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
+        listViewOld.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, sOldMakineNos));
     }
 
     private ArrayAdapter<String> fixItemColor(ArrayList arrayList) {
@@ -631,7 +622,6 @@ public class MainActivity extends AppCompatActivity {
                         Plaka plaka = bBTName ? hmPlakaName.get(device.getName()) : hmPlakaMac.get(device.getAddress());
                         String sPlaka;
                         if (null == plaka) {
-                            sPlaka = BULUNAMADI.concat("_").concat(device.getAddress()).concat(":").concat(device.getName());
                             return;
                         } else {
                             sPlaka = plaka.getPLAKA().concat("_").concat(device.getName());
@@ -639,25 +629,8 @@ public class MainActivity extends AppCompatActivity {
 
                         if (-1 == mDeviceList.indexOf(sPlaka)) {
                             mDeviceList.add(sPlaka);
-                            listView.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, mDeviceList));
+                            listView.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, mDeviceList));
                             Log.i(TAG, sPlaka + " listeye ekleniyor");
-
-                            // Adding old plakas into SharedPreferences
-                            /*
-                            SharedPreferences prefs = context.getSharedPreferences(PREFERENCE_FILE_KEY, 0);
-                            Set<String> set = prefs.getStringSet(OLDMAKINES_KEY, null);
-                            if (set == null) {
-                                set = new HashSet<>(OldMakineLimit);
-                                HelperMethods.addWithLimit(set, sPlaka, OldMakineLimit);
-                            } else {
-                                if (!set.contains(sPlaka)) {
-                                    HelperMethods.addWithLimit(set, sPlaka, OldMakineLimit);
-                                }
-                            }
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putStringSet(OLDMAKINES_KEY, set);
-                            editor.apply();
-                            */
                         }
                         String s = sPlaka.concat("  ").concat("[").concat(sDeviceName).concat("-").concat(sDeviceAddress).concat("]");
                         Log.i(TAG, "A device is discovered : ".concat(s));
@@ -714,9 +687,7 @@ public class MainActivity extends AppCompatActivity {
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
-                                            }
+                                            requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
                                         }
                                     });
                             return;

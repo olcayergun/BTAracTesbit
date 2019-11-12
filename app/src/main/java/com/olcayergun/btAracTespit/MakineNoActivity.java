@@ -33,6 +33,7 @@ public class MakineNoActivity extends AppCompatActivity {
     public static final String DEPO = "DEPO";
     public static final String URUN = "URUN";
     public static final String KAYIT = "KAYIT";
+    public static final String KAYITLI_MAKINERLER ="sKAYITLI_MAKINERLER";
     ListView listView;
 
     @Override
@@ -43,7 +44,7 @@ public class MakineNoActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.lvMakineNo);
         String[] mobileArray = {"Makine Noları alınıyor..."};
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mobileArray);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mobileArray);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -57,19 +58,21 @@ public class MakineNoActivity extends AppCompatActivity {
             }
         });
 
+        //get the file that has other files' URLs
+        //the main files URl at shared preference
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String sMainURL = SP.getString("mainUrl", "");
 
-        //SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
-        //sMainURL= sharedPref.getString(MAINURL, "");
         if (sMainURL.equals("")) {
+            //No main file url so that open settings page
             Toast.makeText(getApplicationContext(), "Ana URL den veriler alınamıyor!!!", Toast.LENGTH_LONG).show();
             Intent i = new Intent(this, MyPreferencesActivity.class);
             startActivity(i);
-            //getURL();
         } else {
+            //get other files' URLs
             getURLler(sMainURL);
 
+            //get MakineNos from Files
             try {
                 FileInputStream fileInputStream = getApplication().openFileInput(FILE_MAKINENO);
                 String fileData = HelperMethods.readFromFileInputStream(fileInputStream);
@@ -88,15 +91,13 @@ public class MakineNoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuSettings:
-                Log.d(TAG, "Settings Menu2!!!");
-                Intent i = new Intent(this, MyPreferencesActivity.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menuSettings) {
+            Log.d(TAG, "Settings Menu2!!!");
+            Intent i = new Intent(this, MyPreferencesActivity.class);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -130,6 +131,7 @@ public class MakineNoActivity extends AppCompatActivity {
                         String sDEPO = ((JSONObject) jsonArray.get(3)).getString("url");
                         String sURUN = ((JSONObject) jsonArray.get(4)).getString("url");
                         String sKAYIT = ((JSONObject) jsonArray.get(5)).getString("url");
+                        String sKAYITLI_MAKINERLER = ((JSONObject) jsonArray.get(6)).getString("url");
 
                         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
@@ -139,6 +141,7 @@ public class MakineNoActivity extends AppCompatActivity {
                         editor.putString(DEPO, sDEPO);
                         editor.putString(URUN, sURUN);
                         editor.putString(KAYIT, sKAYIT);
+                        editor.putString(KAYITLI_MAKINERLER, sKAYITLI_MAKINERLER);
                         editor.apply();
                         getMakineNolar();
                     } catch (Exception e) {
@@ -178,11 +181,11 @@ public class MakineNoActivity extends AppCompatActivity {
                 items[i] = jsonObject.getString("makineno").concat(" ").concat(jsonObject.getString("makineisci"));
             }
             Arrays.sort(items);
-            listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
+            listView.setAdapter(new ArrayAdapter<>(MakineNoActivity.this, android.R.layout.simple_list_item_1, items));
         } catch (Exception e) {
             Log.e(TAG, "", e);
             String[] mobileArray = {"Makine Noları alınamadı..."};
-            listView.setAdapter(new ArrayAdapter(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
+            listView.setAdapter(new ArrayAdapter<>(MakineNoActivity.this, android.R.layout.simple_list_item_1, mobileArray));
         }
     }
 }
