@@ -32,7 +32,7 @@ import androidx.preference.PreferenceManager;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
-import com.olcayergun.btAracTespit.jsonObjects.KayitliMakine;
+import com.olcayergun.btAracTespit.jsonObjects.IsTipleri;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
 import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, Plaka> hmPlakaMac = new HashMap<>();
     private HashMap<String, Plaka> hmPlakaName = new HashMap<>();
     private HashMap<String, Sabitler> hmSabitler = new HashMap<>();
-    private HashMap<String, KayitliMakine> hmKayitliMakineler = new HashMap<>();
+    private HashMap<String, IsTipleri> hmIsTipleri = new HashMap<>();
     private String[] sSendData = new String[3];
 
-    private static String[][] URLSFILES = {{"", "", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt", "kayitlimakineler.txt"}};
+    private static String[][] URLSFILES = {{"", "", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt", "istipleri.txt"}};
     public static String[] SENDFILEURL = {"", "bilgi.txt"};
     private String sMakineNo;
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         URLSFILES[0][1] = sharedPref.getString(MakineNoActivity.DEPO, "");
         URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
         URLSFILES[0][3] = sharedPref.getString(MakineNoActivity.SABITLER, "");
-        URLSFILES[0][4] = sharedPref.getString(MakineNoActivity.KAYITLI_MAKINERLER, "");
+        URLSFILES[0][4] = sharedPref.getString(MakineNoActivity.IS_TIPLERI, "");
         SENDFILEURL[0] = sharedPref.getString(MakineNoActivity.KAYIT, "");
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -393,8 +393,8 @@ public class MainActivity extends AppCompatActivity {
                             HelperMethods.localdosyasil(getApplicationContext(), SENDFILEURL[1]);
                             HelperMethods.localdosyaurunyaz(getApplicationContext(), SENDFILEURL[1], jsonArray.toString());
 
-                            //Send otomatic Sen
-                            if (bSendDate) {
+                            //Send automatic Send
+                            if (bSendDate && HelperMethods.isConnectedMobile(getApplicationContext())) {
                                 SendDeviceDetails sendDeviceDetails = new SendDeviceDetails();
                                 sendDeviceDetails.setListener(new SendDeviceDetails.AsyncTaskListener() {
                                     @Override
@@ -499,12 +499,12 @@ public class MainActivity extends AppCompatActivity {
                             hmSabitler.put("1", s);
                         }
                         break;
-                    case "kayitlimakineler.txt":
-                        hmKayitliMakineler.clear();
+                    case "istipleri.txt":
+                        hmIsTipleri.clear();
                         for (int i = 0; i < jsonObj.length(); i++) {
                             JSONObject jo = jsonObj.getJSONObject(i);
-                            KayitliMakine km = new KayitliMakine(jo);
-                            hmKayitliMakineler.put(jo.getString("makineno"), km);
+                            IsTipleri it = new IsTipleri(jo);
+                            hmIsTipleri.put(jo.getString("istipino"), it);
                         }
                         break;
                 }
@@ -550,10 +550,10 @@ public class MainActivity extends AppCompatActivity {
         String[] sOldMakineNos = null;
 
         /////Get Old Machhines from URL
-        sOldMakineNos = new String[hmKayitliMakineler.size()];
+        sOldMakineNos = new String[hmPlakaName.size()];
         int i = 0;
-        for (KayitliMakine kayitliMakine : hmKayitliMakineler.values()) {
-            sOldMakineNos[i++] = kayitliMakine.getMAKINE_NO();
+        for (Plaka plaka : hmPlakaName.values()) {
+            sOldMakineNos[i++] = plaka.getPLAKA();
         }
         Arrays.sort(sOldMakineNos);
 

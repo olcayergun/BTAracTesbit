@@ -11,6 +11,6 @@
         android:key="bBTNameUse" />
     <CheckBoxPreference android:title="Kayıtlı veriler bağlantı olduğu an gönderilesin mi?"
         android:defaultValue="true"
-        android:summary="Uygulamadaki kayıtlar bağlantı sağlandığında sunucuya gönderilmeye başlanır."
+        android:summary="Uygulamadaki kayıtlar GSM bağlantı sağlandığında sunucuya gönderilmeye başlanır."
         android:key="sendDataOnConn" />
 </PreferenceScreen>

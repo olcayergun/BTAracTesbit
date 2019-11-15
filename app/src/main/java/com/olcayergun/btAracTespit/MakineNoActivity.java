@@ -33,7 +33,7 @@ public class MakineNoActivity extends AppCompatActivity {
     public static final String DEPO = "DEPO";
     public static final String URUN = "URUN";
     public static final String KAYIT = "KAYIT";
-    public static final String KAYITLI_MAKINERLER ="sKAYITLI_MAKINERLER";
+    public static final String IS_TIPLERI ="IS_TIPLERI";
     ListView listView;
 
     @Override
@@ -141,7 +141,7 @@ public class MakineNoActivity extends AppCompatActivity {
                         editor.putString(DEPO, sDEPO);
                         editor.putString(URUN, sURUN);
                         editor.putString(KAYIT, sKAYIT);
-                        editor.putString(KAYITLI_MAKINERLER, sKAYITLI_MAKINERLER);
+                        editor.putString(IS_TIPLERI, sKAYITLI_MAKINERLER);
                         editor.apply();
                         getMakineNolar();
                     } catch (Exception e) {

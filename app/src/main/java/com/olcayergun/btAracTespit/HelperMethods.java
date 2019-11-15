@@ -2,6 +2,8 @@ package com.olcayergun.btAracTespit;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.olcayergun.btAracTespit.jsonObjects.Kayit;
@@ -115,5 +117,26 @@ public class HelperMethods {
             Log.e(TAG, ex.getMessage(), ex);
         }
         return list;
+    }
+
+    /**
+     * Get the network info
+     * @param context
+     * @return
+     */
+    public static NetworkInfo getNetworkInfo(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+
+    /**
+     * Check if there is any connectivity to a mobile network
+     * @param context
+     * @param type
+     * @return
+     */
+    public static boolean isConnectedMobile(Context context){
+        NetworkInfo info = getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_MOBILE);
     }
 }
