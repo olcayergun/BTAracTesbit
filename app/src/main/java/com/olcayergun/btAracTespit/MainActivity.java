@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                             joBilgiler.put("urun", sSendData[1]);
                             joBilgiler.put("depo", sSendData[2]);
                             joBilgiler.put("isSelected", bSendDate);
-                            joBilgiler.put("isSend", false);
+                            joBilgiler.put("isSend", true);
                             joBilgiler.put("zaman", getCurrentTimestamp());
                             joBilgiler.put("lokasyon_x", Double.toString(longitude));
                             joBilgiler.put("lokasyon_y", Double.toString(latitude));
