@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] sSendData = new String[3];
 
     private static String[][] URLSFILES = {{"", "", "", "", ""}, {"urunler.txt", "depolar.txt", "plakalar.txt", "sabitler.txt", "istipleri.txt"}};
-    public static String[] SENDFILEURL = {"", "bilgi.txt"};
+    public static String[] SENDFILEURL = {"", "bilgi.txt", ""};
     private String sMakineNo;
 
     private ListView listView, listViewOld;
@@ -123,8 +123,9 @@ public class MainActivity extends AppCompatActivity {
         URLSFILES[0][1] = sharedPref.getString(MakineNoActivity.DEPO, "");
         URLSFILES[0][2] = sharedPref.getString(MakineNoActivity.PLAKALR, "");
         URLSFILES[0][3] = sharedPref.getString(MakineNoActivity.SABITLER, "");
-        URLSFILES[0][4] = sharedPref.getString(MakineNoActivity.IS_TIPLERI, "");
+        URLSFILES[0][4] = sharedPref.getString(MakineNoActivity.ISTIPLERI, "");
         SENDFILEURL[0] = sharedPref.getString(MakineNoActivity.KAYIT, "");
+        SENDFILEURL[2] = sharedPref.getString(MakineNoActivity.IKINCIKAYIT, "");
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         bBTName = SP.getBoolean("bBTNameUse", false);
@@ -394,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
                             HelperMethods.localdosyaurunyaz(getApplicationContext(), SENDFILEURL[1], jsonArray.toString());
 
                             //Send automatic Send
-                            if (bSendDate && HelperMethods.isConnectedMobile(getApplicationContext())) {
+                            if (bSendDate) {
                                 SendDeviceDetails sendDeviceDetails = new SendDeviceDetails();
                                 sendDeviceDetails.setListener(new SendDeviceDetails.AsyncTaskListener() {
                                     @Override
@@ -422,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                 });
-                                sendDeviceDetails.execute(jsonArray.toString());
+                                sendDeviceDetails.execute(new String[] {jsonArray.toString(), MainActivity.SENDFILEURL[2]});
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "", e);

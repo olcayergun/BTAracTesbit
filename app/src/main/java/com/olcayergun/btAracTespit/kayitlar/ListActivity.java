@@ -101,7 +101,7 @@ public class ListActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Kayıtlar gönderildi ve kayıt güncellendi.", Toast.LENGTH_LONG).show();
                             }
                         });
-                        sendDeviceDetails.execute(jsonArray.toString());
+                        sendDeviceDetails.execute(new String[] {jsonArray.toString(), MainActivity.SENDFILEURL[0]});
                     }
                     return true;
                 case R.id.menuSil:

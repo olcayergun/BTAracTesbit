@@ -3,8 +3,6 @@ package com.olcayergun.btAracTespit.kayitlar;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.olcayergun.btAracTespit.MainActivity;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +20,7 @@ public class SendDeviceDetails extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         String data = "";
         try {
-            URL url = new URL(MainActivity.SENDFILEURL[0]);
+            URL url = new URL(params[1]);
 
             // Create the urlConnection
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -33,7 +33,8 @@ public class MakineNoActivity extends AppCompatActivity {
     public static final String DEPO = "DEPO";
     public static final String URUN = "URUN";
     public static final String KAYIT = "KAYIT";
-    public static final String IS_TIPLERI ="IS_TIPLERI";
+    public static final String ISTIPLERI ="ISTIPLERI";
+    public static final String IKINCIKAYIT = "IKINCIKAYIT";
     ListView listView;
 
     @Override
@@ -131,7 +132,8 @@ public class MakineNoActivity extends AppCompatActivity {
                         String sDEPO = ((JSONObject) jsonArray.get(3)).getString("url");
                         String sURUN = ((JSONObject) jsonArray.get(4)).getString("url");
                         String sKAYIT = ((JSONObject) jsonArray.get(5)).getString("url");
-                        String sKAYITLI_MAKINERLER = ((JSONObject) jsonArray.get(6)).getString("url");
+                        String sISTIPI = ((JSONObject) jsonArray.get(6)).getString("url");
+                        String sIKINCIKAYIT = ((JSONObject) jsonArray.get(7)).getString("url");
 
                         SharedPreferences sharedPref = getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
@@ -141,7 +143,8 @@ public class MakineNoActivity extends AppCompatActivity {
                         editor.putString(DEPO, sDEPO);
                         editor.putString(URUN, sURUN);
                         editor.putString(KAYIT, sKAYIT);
-                        editor.putString(IS_TIPLERI, sKAYITLI_MAKINERLER);
+                        editor.putString(ISTIPLERI, sISTIPI);
+                        editor.putString(IKINCIKAYIT, sIKINCIKAYIT);
                         editor.apply();
                         getMakineNolar();
                     } catch (Exception e) {
