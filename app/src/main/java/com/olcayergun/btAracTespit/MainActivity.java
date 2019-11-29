@@ -1,17 +1,23 @@
 package com.olcayergun.btAracTespit;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,8 +37,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
 import com.olcayergun.btAracTespit.jsonObjects.Depo;
-import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 import com.olcayergun.btAracTespit.jsonObjects.IsTipleri;
+import com.olcayergun.btAracTespit.jsonObjects.Kayit;
 import com.olcayergun.btAracTespit.jsonObjects.Plaka;
 import com.olcayergun.btAracTespit.jsonObjects.Sabitler;
 import com.olcayergun.btAracTespit.jsonObjects.Urun;
@@ -91,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
     LocationTrack locationTrack;
 
     private boolean bBTName = false;
+
+    BluetoothManager btManager;
+    BluetoothAdapter btAdapter;
+    BluetoothLeScanner btScanner;
+    private final static int REQUEST_ENABLE_BT = 1;
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
+        /*
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         startBTDiscovery();
 
@@ -207,9 +220,51 @@ public class MainActivity extends AppCompatActivity {
         BTfilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(btReceiver, BTfilter);
         Log.d(TAG, "Registered BT");
+        */
+
+        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        btAdapter = btManager.getAdapter();
+        btScanner = btAdapter.getBluetoothLeScanner();
+
+
+        if (btAdapter != null && !btAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+
+        // Make sure we have access coarse location enabled, if not, prompt the user to enable it
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("This app needs location access");
+            builder.setMessage("Please grant location access so this app can detect peripherals.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+                }
+            });
+            builder.show();
+        }
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                btScanner.startScan(leScanCallback);
+            }
+        });
 
         dosyadanBilgileriAl();
     }
+
+    // Device scan callback.
+    private ScanCallback leScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            LogUtils.trace("Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + " address: " + result.getDevice().getAddress() +"\n");
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -423,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                 });
-                                sendDeviceDetails.execute(new String[] {jsonArray.toString(), MainActivity.SENDFILEURL[2]});
+                                sendDeviceDetails.execute(new String[]{jsonArray.toString(), MainActivity.SENDFILEURL[2]});
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "", e);
@@ -696,6 +751,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case PERMISSION_REQUEST_COARSE_LOCATION: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("coarse location permission granted");
+                } else {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Functionality limited");
+                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                        }
+
+                    });
+                    builder.show();
+                }
+                return;
+            }
         }
     }
 
