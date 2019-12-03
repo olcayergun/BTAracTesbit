@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
     private ScanCallback leScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            LogUtils.trace("Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + " address: " + result.getDevice().getAddress() +"\n");
+            LogUtils.trace("Low Energy Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + " address: " + result.getDevice().getAddress() +"\n");
         }
     };
 
